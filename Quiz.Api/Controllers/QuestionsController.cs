@@ -85,4 +85,36 @@ public class QuestionsController : ControllerBase
 
         return Ok(result);
     }
+
+    [HttpDelete("{quizId:int}/questions/{questionId:int}")]
+    public async Task<IActionResult> DeleteQuestion([FromRoute] int quizId,[FromRoute] int questionId)
+    {
+        var question = await _context.Questions
+            .Where(q => q.QuizId == quizId && q.Id == questionId)
+            .FirstOrDefaultAsync();
+        if(question is null) return NotFound();
+        _context.Questions.Remove(question);
+        await _context.SaveChangesAsync();
+        return NoContent();
+    }
+
+    [HttpPut("{quizId:int}/questions/{questionId:int}")]
+    public async Task<IActionResult> UpdateQuestion([FromRoute]int questionId,[FromRoute] int quizId, [FromBody] QuestionCreateDto dto)
+    {
+        var question = await _context.Questions.Include(q => q.Answers)
+            .Where(q => q.QuizId == quizId && q.Id == questionId)
+            .FirstOrDefaultAsync();
+        if(question is null) return NotFound();
+        question.TimeLimitSeconds = dto.TimeLimitSeconds;
+        question.Content = dto.Content;
+        _context.Answers.RemoveRange(question.Answers);
+        question.Answers = dto.Answers.Select(a => new Answer
+        {
+            Content = a.Content,
+            IsCorrect = a.IsCorrect
+        }).ToList();
+        await _context.SaveChangesAsync();
+        return NoContent();
+    }
+    
 }
