@@ -30,16 +30,32 @@ public class QuizzesController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("{quizId}")]
+    [HttpGet("{quizId:int}")]
     public async Task<IActionResult> GetQuiz([FromRoute] int quizId)
     {
         var result = await _context.Quizzes
+            .AsNoTracking()
             .Where(q => q.Id == quizId)
-            .Select(q => new QuizSummaryDto(
-                q.Id,
-                q.Title,
-                q.CreatedDate,
-                q.Questions.Count
+            .Select(quiz => new QuizDetailsDto(
+                quiz.Id,
+                quiz.Title,
+                quiz.Description,
+                quiz.CreatedDate,
+                quiz.Questions
+                    .OrderBy(q => q.OrderInQuiz)
+                    .Select(q => new QuestionDto(
+                        q.Id,
+                        q.Content,
+                        q.TimeLimitSeconds,
+                        q.OrderInQuiz,
+                        q.Answers
+                            .OrderBy(a=>a.Id)
+                            .Select(a => new AnswerDto(
+                            a.Id,
+                            a.Content,
+                            a.IsCorrect
+                        )).ToList()
+                    )).ToList()
             ))
             .FirstOrDefaultAsync();
         if (result == null) return NotFound();
@@ -65,7 +81,7 @@ public class QuizzesController : ControllerBase
         return CreatedAtAction(nameof(GetQuiz), new { quizId = newQuiz.Id }, result);
     }
 
-    [HttpPut("{quizId}")]
+    [HttpPut("{quizId:int}")]
     public async Task<IActionResult> UpdateQuiz([FromRoute] int quizId, [FromBody] QuizUpdateDto quizUpdateDto)
     {
         var quizToEdit = await _context.Quizzes.FirstOrDefaultAsync(q => q.Id == quizId);
@@ -76,7 +92,7 @@ public class QuizzesController : ControllerBase
         return NoContent();
     }
 
-    [HttpDelete("{quizId}")]
+    [HttpDelete("{quizId:int}")]
     public async Task<IActionResult> DeleteQuiz([FromRoute] int quizId)
     {
         var quizToDelete = await _context.Quizzes.FirstOrDefaultAsync(q => q.Id == quizId);
