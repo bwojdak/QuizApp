@@ -1,7 +1,7 @@
 ﻿import {useState, useEffect} from 'react';
 import type {QuizSummary} from "../types";
-
-function QuizList() {
+type QuizListProps = {refreshKey: number;}
+function QuizList({refreshKey}: QuizListProps) {
     const [quizzes, setQuizzes] = useState<QuizSummary[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -19,15 +19,15 @@ function QuizList() {
             }
         }
         load();
-    }, []);
+    }, [refreshKey]);
     if (loading) return <div>Loading...</div>;
     if (error) return <div>{error}</div>;
     if (quizzes.length === 0) return <div>No quizzes to show...</div>
     return (
         <div>
-            <h1>Moje quizy</h1>
+            <h1>My quizzes</h1>
             <ul>
-                {quizzes.map(q => <li key={q.id}>{q.title} {q.questionsCount} pytań</li>)}
+                {quizzes.map(q => <li key={q.id}>{q.title} {q.questionsCount} questions</li>)}
             </ul>
         </div>
     )

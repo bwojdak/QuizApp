@@ -4,3 +4,7 @@
    createdDate: string;
    questionsCount: number;
 }
+export type QuizCreate = {
+   title: string;
+   description: string | null;
+}
