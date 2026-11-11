@@ -1,12 +1,13 @@
 ﻿import {useState, useEffect} from 'react';
 import type {QuizSummary} from "../types";
+import {connection} from "../signalr.ts";
 
 type QuizListProps = {
     refreshKey: number;
     onSelect: (id: number) => void;
 }
 
-function QuizList({refreshKey,onSelect}: QuizListProps) {
+function QuizList({refreshKey, onSelect}: QuizListProps) {
     const [quizzes, setQuizzes] = useState<QuizSummary[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -26,6 +27,16 @@ function QuizList({refreshKey,onSelect}: QuizListProps) {
 
         load();
     }, [refreshKey]);
+
+    async function handleStartGame(quizId: number) {
+        try {
+            const pin = await connection.invoke<string>("CreateGame", quizId);
+            console.log(pin);
+        } catch (err) {
+            setError("Failed to start game");
+        }
+    }
+
     if (loading) return <div>Loading...</div>;
     if (error) return <div>{error}</div>;
     if (quizzes.length === 0) return <div>No quizzes to show...</div>
@@ -33,9 +44,15 @@ function QuizList({refreshKey,onSelect}: QuizListProps) {
         <div>
             <h1>My quizzes</h1>
             <ul>
-                {quizzes.map(q => <li key={q.id} onClick={() => onSelect(q.id)}>{q.title} {q.questionsCount} questions</li>)}
+                {quizzes.map(q =>
+                    <li key={q.id}>
+                        <span onClick={() => onSelect(q.id)}> {q.title} {q.questionsCount} questions</span>
+                        <button onClick={() => handleStartGame(q.id)}>Start Game</button>
+                    </li>)
+                }
             </ul>
         </div>
     )
 }
+
 export default QuizList;

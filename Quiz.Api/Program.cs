@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Quiz.Api.Data;
+using Quiz.Api.Game;
+using Quiz.Api.Hubs;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +13,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("Default")));
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<GameStore>();
 
 var app = builder.Build();
 
@@ -26,5 +30,6 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<GameHub>("/hubs/game");
 
 app.Run();
