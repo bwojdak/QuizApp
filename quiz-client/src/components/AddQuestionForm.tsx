@@ -1,8 +1,10 @@
 ﻿import {useState} from 'react';
+import type {Question} from "../types.ts";
 
 type AddQuestionFormProps = {
     quizId: number;
     onCreated: () => void;
+    question?: Question;
 }
 type AnswerDraft = {
     content: string;
@@ -13,10 +15,11 @@ const emptyAnswers: AnswerDraft[] = [{content: "", isCorrect: false},
     {content: "", isCorrect: false},
     {content: "", isCorrect: false},]
 
-function AddQuestionForm({quizId, onCreated}: AddQuestionFormProps) {
-    const [content, setContent] = useState<string>("");
-    const [answers, setAnswers] = useState<AnswerDraft[]>(emptyAnswers);
-    const [timeLimit, setTimeLimit] = useState<number>(20);
+function AddQuestionForm({quizId, onCreated, question}: AddQuestionFormProps) {
+    const [content, setContent] = useState<string>(question?.content ?? "");
+    const [answers, setAnswers] = useState<AnswerDraft[]>(question?.answers
+        .map(a => ({content: a.content, isCorrect: a.isCorrect})) ?? emptyAnswers);
+    const [timeLimit, setTimeLimit] = useState<number>(question?.timeLimitSeconds ?? 20);
     const [error, setError] = useState<string | null>(null);
 
     function updateAnswers(index: number, value: string) {
@@ -31,8 +34,10 @@ function AddQuestionForm({quizId, onCreated}: AddQuestionFormProps) {
         e.preventDefault();
         try {
             setError(null);
-            const response = await fetch(`/api/quizzes/${quizId}/questions`, {
-                method: 'POST',
+            const url = question ? `/api/quizzes/${quizId}/questions/${question.id}` : `/api/quizzes/${quizId}/questions`;
+            const method = question ? 'PUT' : 'POST';
+            const response = await fetch(url, {
+                method,
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
                     content,
@@ -77,7 +82,7 @@ function AddQuestionForm({quizId, onCreated}: AddQuestionFormProps) {
                     />
                 </div>
             ))}
-            <button type="submit">Add question</button>
+            <button type="submit">{question ? "Save" : "Add question"}</button>
             {error && <p>{error}</p>}
         </form>
     )
