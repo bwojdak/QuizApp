@@ -1,5 +1,6 @@
 ﻿import {useState, useEffect} from 'react';
 import type {QuizDetails} from "../types.ts";
+import AddQuestionForm from "./AddQuestionForm";
 
 type QuizDetailsViewProps = {
     quizId: number;
@@ -10,6 +11,7 @@ function QuizDetailsView({quizId,onBack}: QuizDetailsViewProps) {
     const [quiz, setQuiz] = useState<QuizDetails | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const [refreshKey, setRefreshKey] = useState<number>(0);
     useEffect(() => {
         async function load() {
             try {
@@ -25,7 +27,7 @@ function QuizDetailsView({quizId,onBack}: QuizDetailsViewProps) {
         }
 
         load();
-    }, [quizId]);
+    }, [quizId, refreshKey]);
     if (loading) return <div>Loading...</div>;
     if (error) return <div>{error}</div>;
     if (quiz === null) return <div>No quiz found</div>;
@@ -53,6 +55,7 @@ function QuizDetailsView({quizId,onBack}: QuizDetailsViewProps) {
             ) : (
                 <p>No questions yet.</p>
             )}
+            <AddQuestionForm quizId={quiz.id} onCreated={() => setRefreshKey(k => k + 1)}/>
         </div>
     );
 };
