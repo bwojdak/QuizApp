@@ -1,7 +1,12 @@
 ﻿import {useState, useEffect} from 'react';
 import type {QuizSummary} from "../types";
-type QuizListProps = {refreshKey: number;}
-function QuizList({refreshKey}: QuizListProps) {
+
+type QuizListProps = {
+    refreshKey: number;
+    onSelect: (id: number) => void;
+}
+
+function QuizList({refreshKey,onSelect}: QuizListProps) {
     const [quizzes, setQuizzes] = useState<QuizSummary[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -18,6 +23,7 @@ function QuizList({refreshKey}: QuizListProps) {
                 setLoading(false);
             }
         }
+
         load();
     }, [refreshKey]);
     if (loading) return <div>Loading...</div>;
@@ -27,7 +33,7 @@ function QuizList({refreshKey}: QuizListProps) {
         <div>
             <h1>My quizzes</h1>
             <ul>
-                {quizzes.map(q => <li key={q.id}>{q.title} {q.questionsCount} questions</li>)}
+                {quizzes.map(q => <li key={q.id} onClick={() => onSelect(q.id)}>{q.title} {q.questionsCount} questions</li>)}
             </ul>
         </div>
     )

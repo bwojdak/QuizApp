@@ -8,3 +8,22 @@ export type QuizCreate = {
    title: string;
    description: string | null;
 }
+export type QuizDetails = {
+   id: number;
+   title: string;
+   description: string | null;
+   createdDate: string;
+   questions: Question[];
+}
+export type Answer = {
+   id: number;
+   content: string;
+   isCorrect: boolean;
+}
+export type Question = {
+   id: number;
+   content: string;
+   timeLimitSeconds: number;
+   orderInQuiz: number;
+   answers: Answer[];
+}
