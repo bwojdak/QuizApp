@@ -8,14 +8,14 @@ type AnswerDraft = {
     content: string;
     isCorrect: boolean;
 }
+const emptyAnswers: AnswerDraft[] = [{content: "", isCorrect: false},
+    {content: "", isCorrect: false},
+    {content: "", isCorrect: false},
+    {content: "", isCorrect: false},]
 
 function AddQuestionForm({quizId, onCreated}: AddQuestionFormProps) {
     const [content, setContent] = useState<string>("");
-    const [answers, setAnswers] = useState<AnswerDraft[]>([
-        {content: "", isCorrect: false},
-        {content: "", isCorrect: false},
-        {content: "", isCorrect: false},
-        {content: "", isCorrect: false},]);
+    const [answers, setAnswers] = useState<AnswerDraft[]>(emptyAnswers);
     const [timeLimit, setTimeLimit] = useState<number>(20);
     const [error, setError] = useState<string | null>(null);
 
@@ -42,6 +42,8 @@ function AddQuestionForm({quizId, onCreated}: AddQuestionFormProps) {
             });
             if (!response.ok) throw new Error("Failed to add question");
             setContent("");
+            setAnswers(emptyAnswers);
+            setTimeLimit(20);
             onCreated();
         } catch {
             setError("Failed to add question");
