@@ -13,11 +13,10 @@ function JoinGameForm({onJoinGame}: JoinGameFormProps) {
         setError(null);
         try{
             await connection.invoke("JoinGame",pin, nickname);
-            setPin("")
-            setNickname("")
             onJoinGame(pin,nickname)
-        }catch(err){
-            console.error(err);
+        }catch(error){
+            console.error(error);
+            setError("Unable to connect to the game");
         }
     }
 
