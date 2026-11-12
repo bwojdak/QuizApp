@@ -31,3 +31,7 @@ export type PlayerSession = {
    pin: string;
    nickname: string;
 }
+export type ChatMessage = {
+   sender: string;
+   text: string;
+}

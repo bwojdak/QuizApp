@@ -44,7 +44,6 @@ public class GameHub : Hub
             sender = nickname;
         }
         else throw new HubException("You are not in this game");
-
         return Clients.Group(pin).SendAsync("ChatMessage", sender, message);
     }
 }

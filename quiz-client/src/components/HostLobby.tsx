@@ -1,5 +1,6 @@
 ﻿import {useState,useEffect} from "react";
 import {connection} from "../signalr.ts";
+import LobbyChat from "./LobbyChat.tsx";
 
 type HostLobbyProps = {
     pin: string;
@@ -24,6 +25,7 @@ function HostLobby({pin}: HostLobbyProps) {
             <ul>
                 {players.map(nickname=>(<li key={nickname}>{nickname}</li>))}
             </ul>
+            <LobbyChat pin={pin}></LobbyChat>
         </div>
     )
 }

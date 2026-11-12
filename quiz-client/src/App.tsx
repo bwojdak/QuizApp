@@ -6,6 +6,7 @@ import {connection} from "./signalr.ts";
 import JoinGameForm from "./components/JoinGameForm.tsx";
 import type {PlayerSession} from "./types.ts";
 import HostLobby from "./components/HostLobby.tsx";
+import LobbyChat from "./components/LobbyChat.tsx";
 
 function App() {
     const [selectedQuizId, setSelectedQuizId] = useState<number | null>(null);
@@ -22,19 +23,24 @@ function App() {
                 console.error(err);
             }
         }
+
         connect();
     }, [])
-    if(playerSession !== null){
-        return <h1>Joined the game {playerSession.pin} as {playerSession.nickname}</h1>
+    if (playerSession !== null) {
+        return <div>
+            <h1>Joined the game {playerSession.pin} as {playerSession.nickname}</h1>
+            <LobbyChat pin={playerSession.pin}></LobbyChat>
+        </div>
     }
-    if(gamePin !== null) {
+    if (gamePin !== null) {
         return <HostLobby pin={gamePin}/>
     }
     if (selectedQuizId === null) {
         return <div>
-            <JoinGameForm onJoinGame={(pin,nickname)=> setPlayerSession({pin,nickname})}></JoinGameForm>
+            <JoinGameForm onJoinGame={(pin, nickname) => setPlayerSession({pin, nickname})}></JoinGameForm>
             <AddQuizForm onCreated={() => setRefreshKey(k => k + 1)}/>
-            <QuizList refreshKey={refreshKey} onSelect={id => setSelectedQuizId(id)} onGameCreated={gamePin =>setGamePin(gamePin)}/>
+            <QuizList refreshKey={refreshKey} onSelect={id => setSelectedQuizId(id)}
+                      onGameCreated={gamePin => setGamePin(gamePin)}/>
         </div>;
     }
     return (<QuizDetailsView quizId={selectedQuizId} onBack={() => setSelectedQuizId(null)}/>)
