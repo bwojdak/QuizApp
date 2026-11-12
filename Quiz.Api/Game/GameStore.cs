@@ -21,4 +21,9 @@ public class GameStore
         } while (!_games.TryAdd(pin, game));
         return game;
     }
+
+    public GameSession? Get(string pin)
+    {
+        return _games.TryGetValue(pin, out var game) ? game : null;
+    }
 }
