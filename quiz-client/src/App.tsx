@@ -5,6 +5,7 @@ import QuizDetailsView from "./components/QuizDetailsView.tsx";
 import {connection} from "./signalr.ts";
 import JoinGameForm from "./components/JoinGameForm.tsx";
 import type {PlayerSession} from "./types.ts";
+import HostLobby from "./components/HostLobby.tsx";
 
 function App() {
     const [selectedQuizId, setSelectedQuizId] = useState<number | null>(null);
@@ -27,7 +28,8 @@ function App() {
         return <h1>Joined the game {playerSession.pin} as {playerSession.nickname}</h1>
     }
     if(gamePin !== null) {
-        return <h1>PIN: {gamePin}</h1>}
+        return <HostLobby pin={gamePin}/>
+    }
     if (selectedQuizId === null) {
         return <div>
             <JoinGameForm onJoinGame={(pin,nickname)=> setPlayerSession({pin,nickname})}></JoinGameForm>
