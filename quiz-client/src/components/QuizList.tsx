@@ -5,12 +5,14 @@ import {connection} from "../signalr.ts";
 type QuizListProps = {
     refreshKey: number;
     onSelect: (id: number) => void;
+    onGameCreated: (pin: string) => void;
 }
 
-function QuizList({refreshKey, onSelect}: QuizListProps) {
+function QuizList({refreshKey, onSelect,onGameCreated}: QuizListProps) {
     const [quizzes, setQuizzes] = useState<QuizSummary[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const [startGameError, setStartGameError] = useState<string | null>(null);
     useEffect(() => {
         async function load() {
             try {
@@ -29,11 +31,13 @@ function QuizList({refreshKey, onSelect}: QuizListProps) {
     }, [refreshKey]);
 
     async function handleStartGame(quizId: number) {
+        setStartGameError(null);
         try {
             const pin = await connection.invoke<string>("CreateGame", quizId);
-            console.log(pin);
+            onGameCreated(pin)
         } catch (err) {
-            setError("Failed to start game");
+            console.error(err);
+            setStartGameError('Failed to create game');
         }
     }
 
@@ -43,11 +47,12 @@ function QuizList({refreshKey, onSelect}: QuizListProps) {
     return (
         <div>
             <h1>My quizzes</h1>
+            {startGameError&&startGameError}
             <ul>
                 {quizzes.map(q =>
                     <li key={q.id}>
                         <span onClick={() => onSelect(q.id)}> {q.title} {q.questionsCount} questions</span>
-                        <button onClick={() => handleStartGame(q.id)}>Start Game</button>
+                        <button onClick={() => handleStartGame(q.id)}>Create Game</button>
                     </li>)
                 }
             </ul>
