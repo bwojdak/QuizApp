@@ -27,3 +27,7 @@ export type Question = {
    orderInQuiz: number;
    answers: Answer[];
 }
+export type PlayerSession = {
+   pin: string;
+   nickname: string;
+}
