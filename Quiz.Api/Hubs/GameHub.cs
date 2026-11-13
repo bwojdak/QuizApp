@@ -11,11 +11,13 @@ public class GameHub : Hub
 {
     private readonly GameStore _gameStore;
     private readonly AppDbContext _context;
+    private readonly GameRunner _gameRunner;
 
-    public GameHub(GameStore gameStore, AppDbContext context)
+    public GameHub(GameStore gameStore, AppDbContext context, GameRunner gameRunner)
     {
         _context = context;
         _gameStore = gameStore;
+        _gameRunner = gameRunner;
     }
 
     public async Task<string> CreateGame(int quizId)
@@ -46,24 +48,13 @@ public class GameHub : Hub
         if (game is null) throw new HubException("Game not found");
         if (game.HostConnectionId != Context.ConnectionId) throw new HubException("You are not Host");
         if (game.IsStarted) throw new HubException("Game is already started");
-        var question = await _context.Questions
+        var hasQuestion = await _context.Questions
             .Where(q => q.QuizId == game.QuizId)
-            .OrderBy(q => q.OrderInQuiz)
-            .Select(q => new PlayerQuestionDto(
-                q.Id,
-                q.Content,
-                q.TimeLimitSeconds,
-                q.Answers
-                    .OrderBy(a => a.Id)
-                    .Select(a => new PlayerAnswerDto(a.Id, a.Content))
-                    .ToList()
-            )).FirstOrDefaultAsync();
-        if (question is null) throw new HubException("Quiz has no questions");
-        game.CurrentQuestionId = question.Id;
-        game.QuestionStartedAt = DateTime.UtcNow;
+            .AnyAsync();
+        if (!hasQuestion) throw new HubException("Quiz has no questions");
         game.IsStarted = true;
         await Clients.Group(pin).SendAsync("GameStarted");
-        await Clients.Group(pin).SendAsync("QuestionStarted", question);
+        _ = _gameRunner.RunGame(pin);
     }
 
     public async Task<AnswerResultDto> SubmitAnswer(string pin, int answerId)

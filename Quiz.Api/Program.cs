@@ -15,6 +15,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddOpenApi();
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<GameStore>();
+builder.Services.AddSingleton<GameRunner>();
 
 var app = builder.Build();
 
