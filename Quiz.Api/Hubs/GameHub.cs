@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Quiz.Api.Data;
 using Quiz.Api.DTOs;
 using Quiz.Api.Game;
+using Quiz.Api.Models;
 
 namespace Quiz.Api.Hubs;
 
@@ -58,9 +59,33 @@ public class GameHub : Hub
                     .ToList()
             )).FirstOrDefaultAsync();
         if (question is null) throw new HubException("Quiz has no questions");
+        game.CurrentQuestionId = question.Id;
+        game.QuestionStartedAt = DateTime.UtcNow;
         game.IsStarted = true;
         await Clients.Group(pin).SendAsync("GameStarted");
         await Clients.Group(pin).SendAsync("QuestionStarted", question);
+    }
+
+    public async Task SubmitAnswer(string pin, int answerId)
+    {
+        GameSession? game = _gameStore.Get(pin);
+        if (game is null) throw new HubException("Game not found");
+        if (!game.Players.TryGetValue(Context.ConnectionId, out var nickname))
+            throw new HubException("You are not in this game");
+        if (game.Answers.TryGetValue(nickname, out int answeredQuestionId))
+        {
+            if (answeredQuestionId == game.CurrentQuestionId)
+                throw new HubException("You already answered the question");
+        }
+        var elapsed = (DateTime.UtcNow - game.QuestionStartedAt).TotalSeconds;
+        var answer = await _context.Answers
+            .Include(a => a.Question).FirstOrDefaultAsync(a => a.Id == answerId);
+        if (answer is null || answer.QuestionId != game.CurrentQuestionId) throw new HubException("Invalid answer");
+        if (elapsed > answer.Question.TimeLimitSeconds) throw new HubException("Time limit exceeded");
+        game.Answers[nickname] = answer.QuestionId;
+        int points = answer.IsCorrect ?
+            (int)Math.Round(100 + 100 * (1 - elapsed / answer.Question.TimeLimitSeconds)) : 0;
+        game.Scores.AddOrUpdate(nickname, points, (key, oldValue) => oldValue + points);
     }
 
     public Task SendMessage(string pin, string message)
