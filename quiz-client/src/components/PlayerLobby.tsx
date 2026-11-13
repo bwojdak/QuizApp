@@ -1,7 +1,7 @@
 ﻿import {useEffect, useState} from "react";
 import {connection} from "../signalr.ts";
 import LobbyChat from "./LobbyChat.tsx";
-import type {PlayerQuestion} from "../types.ts";
+import type {AnswerResult, PlayerQuestion} from "../types.ts";
 
 type PlayerLobbyProps = {
     pin: string; nickname: string; initialPlayers: string[];
@@ -11,6 +11,8 @@ function PlayerLobby({pin, nickname, initialPlayers}: PlayerLobbyProps) {
     const [players, setPlayers] = useState<string[]>(initialPlayers);
     const [isStarted, setIsStarted] = useState<boolean>(false);
     const [question, setQuestion] = useState<PlayerQuestion | null>(null);
+    const [error, setError] = useState<string | null>(null);
+    const [answerResult, setAnswerResult] = useState<AnswerResult | null>(null);
     useEffect(() => {
         function handlePlayerJoined(player: string) {
             setPlayers(prevPlayers => [...prevPlayers, player]);
@@ -34,13 +36,37 @@ function PlayerLobby({pin, nickname, initialPlayers}: PlayerLobbyProps) {
             connection.off("GameStarted", handleGameStart);
         }
     }, []);
+    async function handleSubmitAnswer(answerId:number) {
+        try{
+            setError(null);
+            const result = await connection.invoke<AnswerResult>("SubmitAnswer",pin,answerId);
+            setAnswerResult(result)
+        }catch(err){
+            console.error(err);
+            if(err instanceof Error){
+                const parts = err.message.split("HubException: ")
+                setError(parts[1] ?? "Error occured");
+            }
+            else {
+                setError("Error occured");
+            }
+        }
+    }
+    if(answerResult!=null){
+        return(
+            <div>
+                {answerResult.isCorrect ? "Dobrze!" : "Źle!"} {answerResult.points} pkt
+            </div>
+        )
+    }
     if (question !== null) {
         return(
         <div>
             <h1>{question.content}</h1>
             <ul>
-                {question.answers.map(a=><li key={a.id}><button>{a.content}</button></li>)}
+                {question.answers.map(a=><li key={a.id}><button onClick={()=> handleSubmitAnswer(a.id)}>{a.content}</button></li>)}
             </ul>
+            {error && <p>{error}</p>}
         </div>
         )
     }

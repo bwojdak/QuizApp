@@ -10,6 +10,7 @@ public record AnswerCreateDto([Required] [MaxLength(200)] string Content, bool I
 
 public record PlayerAnswerDto(int Id,string Content);
 public record PlayerQuestionDto(int Id,string Content,int TimeLimitSeconds, List<PlayerAnswerDto> Answers);
+public record AnswerResultDto(int Points, bool IsCorrect);
 
 public record QuestionCreateDto(
     [Required] [MaxLength(300)] string Content,

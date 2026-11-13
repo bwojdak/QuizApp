@@ -66,7 +66,7 @@ public class GameHub : Hub
         await Clients.Group(pin).SendAsync("QuestionStarted", question);
     }
 
-    public async Task SubmitAnswer(string pin, int answerId)
+    public async Task<AnswerResultDto> SubmitAnswer(string pin, int answerId)
     {
         GameSession? game = _gameStore.Get(pin);
         if (game is null) throw new HubException("Game not found");
@@ -86,6 +86,7 @@ public class GameHub : Hub
         int points = answer.IsCorrect ?
             (int)Math.Round(100 + 100 * (1 - elapsed / answer.Question.TimeLimitSeconds)) : 0;
         game.Scores.AddOrUpdate(nickname, points, (key, oldValue) => oldValue + points);
+        return new AnswerResultDto(points, answer.IsCorrect);
     }
 
     public Task SendMessage(string pin, string message)

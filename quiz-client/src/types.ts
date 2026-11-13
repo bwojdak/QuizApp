@@ -46,3 +46,7 @@ export type PlayerQuestion = {
    timeLimitSeconds: number;
    answers: PlayerAnswer[];
 }
+export type AnswerResult = {
+   points: number;
+   isCorrect: boolean;
+}
