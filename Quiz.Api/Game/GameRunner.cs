@@ -21,6 +21,7 @@ public class GameRunner
 
     public async Task RunGame(string pin)
     {
+        List<PlayerScore> sortedScoreList = new List<PlayerScore>();
         GameSession? game = _gameStore.Get(pin);
         if (game is null) return;
         using var scope = _scopeFactory.CreateScope();
@@ -37,6 +38,10 @@ public class GameRunner
                     .Select(a => new PlayerAnswerDto(a.Id, a.Content))
                     .ToList()
             )).ToListAsync();
+        foreach (var nickname in game.Players.Values)
+        {
+            game.Scores.TryAdd(nickname, 0);
+        }
         foreach (var question in questions)
         {
             game.CurrentQuestionId = question.Id;
@@ -44,5 +49,11 @@ public class GameRunner
             await _hubContext.Clients.Group(pin).SendAsync("QuestionStarted", question);
             await Task.Delay(TimeSpan.FromSeconds(question.TimeLimitSeconds));
         }
+
+        sortedScoreList = game.Scores
+            .OrderByDescending(s => s.Value)
+            .Select(s => new PlayerScore(s.Key, s.Value))
+            .ToList();
+        await _hubContext.Clients.Group(pin).SendAsync("GameEnded", sortedScoreList);
     }
 }

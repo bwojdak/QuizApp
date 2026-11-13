@@ -12,6 +12,8 @@ public record PlayerAnswerDto(int Id,string Content);
 public record PlayerQuestionDto(int Id,string Content,int TimeLimitSeconds, List<PlayerAnswerDto> Answers);
 public record AnswerResultDto(int Points, bool IsCorrect);
 
+public record PlayerScore(string Nickname, int Points);
+
 public record QuestionCreateDto(
     [Required] [MaxLength(300)] string Content,
     [Range(5, 120)] int TimeLimitSeconds,

@@ -1,7 +1,7 @@
 ﻿import {useEffect, useState} from "react";
 import {connection} from "../signalr.ts";
 import LobbyChat from "./LobbyChat.tsx";
-import type {AnswerResult, PlayerQuestion} from "../types.ts";
+import type {AnswerResult, PlayerQuestion, PlayerScore} from "../types.ts";
 
 type PlayerLobbyProps = {
     pin: string; nickname: string; initialPlayers: string[];
@@ -13,6 +13,7 @@ function PlayerLobby({pin, nickname, initialPlayers}: PlayerLobbyProps) {
     const [question, setQuestion] = useState<PlayerQuestion | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [answerResult, setAnswerResult] = useState<AnswerResult | null>(null);
+    const [scoreList, setScoreList] = useState<PlayerScore[] | null>(null);
     useEffect(() => {
         function handlePlayerJoined(player: string) {
             setPlayers(prevPlayers => [...prevPlayers, player]);
@@ -26,12 +27,17 @@ function PlayerLobby({pin, nickname, initialPlayers}: PlayerLobbyProps) {
             setQuestion(q);
             setAnswerResult(null);
         }
+        function handleGameEnded(ranking: PlayerScore[]) {
+            setScoreList(ranking)
+        }
 
+        connection.on("GameEnded", handleGameEnded)
         connection.on("QuestionStarted", handleQuestionStarted);
         connection.on("GameStarted", handleGameStart);
         connection.on("PlayerJoined", handlePlayerJoined);
 
         return () => {
+            connection.off("GameEnded", handleGameEnded);
             connection.off("QuestionStarted", handleQuestionStarted);
             connection.off("PlayerJoined", handlePlayerJoined);
             connection.off("GameStarted", handleGameStart);
@@ -54,6 +60,19 @@ function PlayerLobby({pin, nickname, initialPlayers}: PlayerLobbyProps) {
         }
     }
 
+    if (scoreList !== null) {
+        return (
+            <div>
+                <ul>
+                    {scoreList.map((s, index) => (
+                        <li key={s.nickname}>
+                            {index + 1}. {s.nickname} – {s.points} points
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        )
+    }
     if (question !== null) {
         return (
             <div>

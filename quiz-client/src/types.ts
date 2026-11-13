@@ -50,3 +50,7 @@ export type AnswerResult = {
    points: number;
    isCorrect: boolean;
 }
+export type PlayerScore = {
+   nickname: string;
+   points: number;
+}
