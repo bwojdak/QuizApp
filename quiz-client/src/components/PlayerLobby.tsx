@@ -23,7 +23,8 @@ function PlayerLobby({pin, nickname, initialPlayers}: PlayerLobbyProps) {
         }
 
         function handleQuestionStarted(q: PlayerQuestion) {
-            setQuestion(q)
+            setQuestion(q);
+            setAnswerResult(null);
         }
 
         connection.on("QuestionStarted", handleQuestionStarted);
@@ -36,38 +37,39 @@ function PlayerLobby({pin, nickname, initialPlayers}: PlayerLobbyProps) {
             connection.off("GameStarted", handleGameStart);
         }
     }, []);
-    async function handleSubmitAnswer(answerId:number) {
-        try{
+
+    async function handleSubmitAnswer(answerId: number) {
+        try {
             setError(null);
-            const result = await connection.invoke<AnswerResult>("SubmitAnswer",pin,answerId);
+            const result = await connection.invoke<AnswerResult>("SubmitAnswer", pin, answerId);
             setAnswerResult(result)
-        }catch(err){
+        } catch (err) {
             console.error(err);
-            if(err instanceof Error){
+            if (err instanceof Error) {
                 const parts = err.message.split("HubException: ")
                 setError(parts[1] ?? "Error occured");
-            }
-            else {
+            } else {
                 setError("Error occured");
             }
         }
     }
-    if(answerResult!=null){
-        return(
-            <div>
-                {answerResult.isCorrect ? "Dobrze!" : "Źle!"} {answerResult.points} pkt
-            </div>
-        )
-    }
+
     if (question !== null) {
-        return(
-        <div>
-            <h1>{question.content}</h1>
-            <ul>
-                {question.answers.map(a=><li key={a.id}><button onClick={()=> handleSubmitAnswer(a.id)}>{a.content}</button></li>)}
-            </ul>
-            {error && <p>{error}</p>}
-        </div>
+        return (
+            <div>
+                <h1>{question.content}</h1>
+                <ul>
+                    {question.answers.map(a => <li key={a.id}>
+                        <button onClick={() => handleSubmitAnswer(a.id)}>{a.content}</button>
+                    </li>)}
+                </ul>
+                {answerResult != null && (
+                    <>
+                        {answerResult.isCorrect ? "Dobrze!" : "Źle!"} {answerResult.points} pkt
+                    </>
+                )}
+                {error && <p>{error}</p>}
+            </div>
         )
     }
     if (isStarted) {
