@@ -36,3 +36,13 @@ export type ChatMessage = {
    sender: string;
    text: string;
 }
+export type PlayerAnswer = {
+   id: number;
+   content: string;
+}
+export type PlayerQuestion = {
+   id: number;
+   content: string;
+   timeLimitSeconds: number;
+   answers: PlayerAnswer[];
+}
