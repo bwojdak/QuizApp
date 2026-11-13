@@ -20,7 +20,7 @@ public class GameHub : Hub
         return game.Pin;
     }
 
-    public async Task JoinGame(string pin, string nickname)
+    public async Task<List<string>> JoinGame(string pin, string nickname)
     {
         GameSession? game = _gameStore.Get(pin);
         if (game is null) throw new HubException("Game not found");
@@ -29,7 +29,8 @@ public class GameHub : Hub
         if (!game.Players.TryAdd(Context.ConnectionId, nickname))
             throw new HubException("You already joined this game");
         await Groups.AddToGroupAsync(Context.ConnectionId, pin);
-        await Clients.Client(game.HostConnectionId).SendAsync("PlayerJoined", nickname);
+        await Clients.OthersInGroup(pin).SendAsync("PlayerJoined", nickname);
+        return game.Players.Values.ToList();
     }
 
     public Task SendMessage(string pin, string message)

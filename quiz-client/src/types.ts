@@ -30,6 +30,7 @@ export type Question = {
 export type PlayerSession = {
    pin: string;
    nickname: string;
+   players: string[];
 }
 export type ChatMessage = {
    sender: string;

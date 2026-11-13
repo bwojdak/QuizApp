@@ -1,7 +1,7 @@
 ﻿import {useState} from "react";
 import {connection} from "../signalr.ts";
 type JoinGameFormProps = {
-    onJoinGame: (pin: string, nickname: string) => void;
+    onJoinGame: (pin: string, nickname: string, players: string[]) => void;
 }
 
 function JoinGameForm({onJoinGame}: JoinGameFormProps) {
@@ -12,8 +12,8 @@ function JoinGameForm({onJoinGame}: JoinGameFormProps) {
         e.preventDefault();
         setError(null);
         try{
-            await connection.invoke("JoinGame",pin, nickname);
-            onJoinGame(pin,nickname)
+            const players = await connection.invoke<string[]>("JoinGame", pin, nickname);
+            onJoinGame(pin,nickname, players);
         }catch(error){
             console.error(error);
             setError("Unable to connect to the game");
