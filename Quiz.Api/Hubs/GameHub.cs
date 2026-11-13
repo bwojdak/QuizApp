@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using Quiz.Api.Data;
 using Quiz.Api.Game;
 
 namespace Quiz.Api.Hubs;
@@ -6,9 +7,11 @@ namespace Quiz.Api.Hubs;
 public class GameHub : Hub
 {
     private readonly GameStore _gameStore;
+    private readonly AppDbContext _context;
 
-    public GameHub(GameStore gameStore)
+    public GameHub(GameStore gameStore,AppDbContext context)
     {
+        _context = context;
         _gameStore = gameStore;
     }
 
@@ -24,6 +27,7 @@ public class GameHub : Hub
     {
         GameSession? game = _gameStore.Get(pin);
         if (game is null) throw new HubException("Game not found");
+        if (game.IsStarted) throw new HubException("Game is already started");
         if (string.IsNullOrWhiteSpace(nickname)) throw new HubException("Nickname cannot be empty");
         if (game.Players.Values.Contains(nickname)) throw new HubException("Your nickname is taken");
         if (!game.Players.TryAdd(Context.ConnectionId, nickname))
@@ -38,6 +42,8 @@ public class GameHub : Hub
         GameSession? game = _gameStore.Get(pin);
         if (game is null) throw new HubException("Game not found");
         if(game.HostConnectionId != Context.ConnectionId) throw new HubException("You are not Host");
+        if(game.IsStarted) throw new HubException("Game is already started");
+        game.IsStarted = true;
         await Clients.Group(pin).SendAsync("GameStarted");
     }
 

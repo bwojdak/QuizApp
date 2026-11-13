@@ -8,6 +8,7 @@ type HostLobbyProps = {
 function HostLobby({pin}: HostLobbyProps) {
     const [players, setPlayers] = useState<string[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const [isStarted, setIsStarted] = useState<boolean>(false);
     useEffect(() => {
         function handlePlayerJoined(nickname: string)
         {
@@ -23,11 +24,17 @@ function HostLobby({pin}: HostLobbyProps) {
         setError(null);
         try {
             await connection.invoke("StartGame", pin)
+            setIsStarted(true);
         }
         catch (err){
             console.error(err)
             setError("Unable to start game");
         }
+    }
+    if (isStarted) {
+        return (
+            <h1>Game Started</h1>
+        )
     }
     return (
         <div>
