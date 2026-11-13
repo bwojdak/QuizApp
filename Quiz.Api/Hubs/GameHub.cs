@@ -33,6 +33,14 @@ public class GameHub : Hub
         return game.Players.Values.ToList();
     }
 
+    public async Task StartGame(string pin)
+    {
+        GameSession? game = _gameStore.Get(pin);
+        if (game is null) throw new HubException("Game not found");
+        if(game.HostConnectionId != Context.ConnectionId) throw new HubException("You are not Host");
+        await Clients.Group(pin).SendAsync("GameStarted");
+    }
+
     public Task SendMessage(string pin, string message)
     {
         GameSession? game = _gameStore.Get(pin);
