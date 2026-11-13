@@ -23,6 +23,7 @@ function HostLobby({pin}: HostLobbyProps) {
             <h1>PIN: {pin}</h1>
             <h2>Players:</h2>
             <ul>
+                <li>Host (You)</li>
                 {players.map(nickname=>(<li key={nickname}>{nickname}</li>))}
             </ul>
             <LobbyChat pin={pin}></LobbyChat>

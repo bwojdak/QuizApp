@@ -24,7 +24,8 @@ function PlayerLobby({pin, nickname, initialPlayers}: PlayerLobbyProps) {
             <h1>Joined the game {pin} as {nickname}</h1>
             <h2>Players:</h2>
             <ul>
-                {players.map(player => (<li key={player}>{player}</li>))}
+                <li>Host</li>
+                {players.map(player => (<li key={player}>{player} {player===nickname&& '(You)'}</li>))}
             </ul>
             <LobbyChat pin={pin}/>
         </div>

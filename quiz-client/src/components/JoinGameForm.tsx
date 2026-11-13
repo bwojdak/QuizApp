@@ -14,9 +14,15 @@ function JoinGameForm({onJoinGame}: JoinGameFormProps) {
         try{
             const players = await connection.invoke<string[]>("JoinGame", pin, nickname);
             onJoinGame(pin,nickname, players);
-        }catch(error){
-            console.error(error);
-            setError("Unable to connect to the game");
+        }catch(err){
+            console.error(err);
+            if(err instanceof Error){
+                const parts = err.message.split("HubException: ")
+                setError(parts[1] ?? "Unable to connect to the game");
+            }
+            else {
+                setError("Unable to connect to the game");
+            }
         }
     }
 
