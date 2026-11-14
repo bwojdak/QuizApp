@@ -16,6 +16,7 @@ function PlayerLobby({pin, nickname, initialPlayers,onLeave}: PlayerLobbyProps) 
     const [scoreList, setScoreList] = useState<PlayerScore[] | null>(null);
     const [isKicked, setIsKicked] = useState<boolean>(false);
     const [countdown, setCountdown] = useState<number | null>(null);
+    const [currentRanking, setCurrentRanking] = useState<PlayerScore[] | null>(null);
     useEffect(() => {
         function handlePlayerJoined(player: string) {
             setPlayers(prevPlayers => [...prevPlayers, player]);
@@ -27,6 +28,7 @@ function PlayerLobby({pin, nickname, initialPlayers,onLeave}: PlayerLobbyProps) 
             }
         }
         function handleQuestionStarted(q: PlayerQuestion) {
+            setCurrentRanking(null);
             setQuestion(q);
             setAnswerResult(null);
         }
@@ -36,12 +38,17 @@ function PlayerLobby({pin, nickname, initialPlayers,onLeave}: PlayerLobbyProps) 
         function handleCountdown(seconds: number){
             setCountdown(seconds);
         }
+        function handleCurrentRanking(crntRanking: PlayerScore[]) {
+            setCurrentRanking(crntRanking)
+        }
+        connection.on("CurrentRanking", handleCurrentRanking)
         connection.on("PlayerKicked", handlePlayerKicked);
         connection.on("GameEnded", handleGameEnded)
         connection.on("QuestionStarted", handleQuestionStarted);
         connection.on("PlayerJoined", handlePlayerJoined);
         connection.on("Countdown", handleCountdown);
         return () => {
+            connection.off("CurrentRanking", handleCurrentRanking)
             connection.off("Countdown", handleCountdown);
             connection.off("PlayerKicked", handlePlayerKicked);
             connection.off("GameEnded", handleGameEnded);
@@ -86,6 +93,19 @@ function PlayerLobby({pin, nickname, initialPlayers,onLeave}: PlayerLobbyProps) 
             </div>
         )
     }
+    if (currentRanking !== null) {
+        return (
+            <div>
+                <ul>
+                    {currentRanking.map((s, index) => (
+                        <li key={s.nickname}>
+                            {index + 1}. {s.nickname} – {s.points} points
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        )
+    }
     if (question !== null) {
         return (
             <div>
@@ -97,7 +117,7 @@ function PlayerLobby({pin, nickname, initialPlayers,onLeave}: PlayerLobbyProps) 
                 </ul>
                 {answerResult != null && (
                     <>
-                        {answerResult.isCorrect ? "Dobrze!" : "Źle!"} {answerResult.points} pkt
+                        {answerResult.isCorrect ? "Good answer!" : "Bad answer!"} {answerResult.points} pkt
                     </>
                 )}
                 {error && <p>{error}</p>}

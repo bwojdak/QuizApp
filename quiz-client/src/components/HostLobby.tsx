@@ -13,6 +13,7 @@ function HostLobby({pin}: HostLobbyProps) {
     const [scoreList, setScoreList] = useState<PlayerScore[] | null>(null);
     const [countdown, setCountdown] = useState<number | null>(null);
     const [question, setQuestion] = useState<PlayerQuestion | null>(null);
+    const [currentRanking, setCurrentRanking] = useState<PlayerScore[] | null>(null);
     useEffect(() => {
         function handlePlayerJoined(nickname: string) {
             setPlayers(prevPlayers => [...prevPlayers, nickname]);
@@ -25,16 +26,22 @@ function HostLobby({pin}: HostLobbyProps) {
         }
         function handleQuestionStarted(q: PlayerQuestion) {
             setQuestion(q);
+            setCurrentRanking(null);
         }
         function handleCountdown(seconds: number){
             setCountdown(seconds);
         }
+        function handleCurrentRanking(crntRanking: PlayerScore[]) {
+            setCurrentRanking(crntRanking)
+        }
+        connection.on("CurrentRanking", handleCurrentRanking)
         connection.on("QuestionStarted", handleQuestionStarted)
         connection.on("Countdown", handleCountdown);
         connection.on("PlayerKicked", handlePlayerKicked);
         connection.on("PlayerJoined", handlePlayerJoined);
         connection.on("GameEnded", handleGameEnded);
         return () => {
+            connection.off("CurrentRanking", handleCurrentRanking)
             connection.off("QuestionStarted", handleQuestionStarted)
             connection.off("Countdown", handleCountdown);
             connection.off("GameEnded", handleGameEnded);
@@ -67,6 +74,19 @@ function HostLobby({pin}: HostLobbyProps) {
             <div>
                 <ul>
                     {scoreList.map((s, index) => (
+                        <li key={s.nickname}>
+                            {index + 1}. {s.nickname} – {s.points} points
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        )
+    }
+    if (currentRanking !== null) {
+        return (
+            <div>
+                <ul>
+                    {currentRanking.map((s, index) => (
                         <li key={s.nickname}>
                             {index + 1}. {s.nickname} – {s.points} points
                         </li>

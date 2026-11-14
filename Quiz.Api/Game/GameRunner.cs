@@ -42,18 +42,29 @@ public class GameRunner
         {
             game.Scores.TryAdd(nickname, 0);
         }
-        
+
         for (int i = 5; i > 0; i--)
         {
-            await _hubContext.Clients.Group(pin).SendAsync("Countdown",i);
+            await _hubContext.Clients.Group(pin).SendAsync("Countdown", i);
             await Task.Delay(TimeSpan.FromSeconds(1));
         }
-        foreach (var question in questions)
+
+        for (int i = 0; i < questions.Count; i++)
         {
+            var question = questions[i];
             game.CurrentQuestionId = question.Id;
             game.QuestionStartedAt = DateTime.UtcNow;
             await _hubContext.Clients.Group(pin).SendAsync("QuestionStarted", question);
             await Task.Delay(TimeSpan.FromSeconds(question.TimeLimitSeconds));
+            bool isLastQuestion = i == questions.Count - 1;
+            if (isLastQuestion)
+                break; 
+            var currentRanking = game.Scores
+                .OrderByDescending(s => s.Value)
+                .Select(s => new PlayerScore(s.Key, s.Value))
+                .ToList();
+            await _hubContext.Clients.Group(pin).SendAsync("CurrentRanking", currentRanking);
+            await Task.Delay(TimeSpan.FromSeconds(5));
         }
 
         sortedScoreList = game.Scores
