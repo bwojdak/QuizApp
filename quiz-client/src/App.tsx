@@ -27,14 +27,16 @@ function App() {
         connect();
     }, [])
     if (playerSession !== null) {
-        return <PlayerLobby pin={playerSession.pin} nickname={playerSession.nickname} initialPlayers={playerSession.players}/>;
+        return <PlayerLobby pin={playerSession.pin} nickname={playerSession.nickname}
+                            initialPlayers={playerSession.players} onLeave={() => setPlayerSession(null)}/>;
     }
     if (gamePin !== null) {
         return <HostLobby pin={gamePin}/>
     }
     if (selectedQuizId === null) {
         return <div>
-            <JoinGameForm onJoinGame={(pin, nickname,players) => setPlayerSession({pin, nickname,players})}></JoinGameForm>
+            <JoinGameForm
+                onJoinGame={(pin, nickname, players) => setPlayerSession({pin, nickname, players})}></JoinGameForm>
             <AddQuizForm onCreated={() => setRefreshKey(k => k + 1)}/>
             <QuizList refreshKey={refreshKey} onSelect={id => setSelectedQuizId(id)}
                       onGameCreated={gamePin => setGamePin(gamePin)}/>

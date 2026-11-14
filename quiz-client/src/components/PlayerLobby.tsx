@@ -5,20 +5,27 @@ import type {AnswerResult, PlayerQuestion, PlayerScore} from "../types.ts";
 
 type PlayerLobbyProps = {
     pin: string; nickname: string; initialPlayers: string[];
+    onLeave: () => void;
 }
 
-function PlayerLobby({pin, nickname, initialPlayers}: PlayerLobbyProps) {
+function PlayerLobby({pin, nickname, initialPlayers,onLeave}: PlayerLobbyProps) {
     const [players, setPlayers] = useState<string[]>(initialPlayers);
     const [isStarted, setIsStarted] = useState<boolean>(false);
     const [question, setQuestion] = useState<PlayerQuestion | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [answerResult, setAnswerResult] = useState<AnswerResult | null>(null);
     const [scoreList, setScoreList] = useState<PlayerScore[] | null>(null);
+    const [isKicked, setIsKicked] = useState<boolean>(false);
     useEffect(() => {
         function handlePlayerJoined(player: string) {
             setPlayers(prevPlayers => [...prevPlayers, player]);
         }
-
+        function handlePlayerKicked(nicknameToKick: string) {
+            setPlayers(prev => prev.filter(player => player !== nicknameToKick));
+            if (nicknameToKick === nickname) {
+                setIsKicked(true);
+            }
+        }
         function handleGameStart() {
             setIsStarted(true);
         }
@@ -30,19 +37,20 @@ function PlayerLobby({pin, nickname, initialPlayers}: PlayerLobbyProps) {
         function handleGameEnded(ranking: PlayerScore[]) {
             setScoreList(ranking)
         }
-
+        connection.on("PlayerKicked", handlePlayerKicked);
         connection.on("GameEnded", handleGameEnded)
         connection.on("QuestionStarted", handleQuestionStarted);
         connection.on("GameStarted", handleGameStart);
         connection.on("PlayerJoined", handlePlayerJoined);
 
         return () => {
+            connection.off("PlayerKicked", handlePlayerKicked);
             connection.off("GameEnded", handleGameEnded);
             connection.off("QuestionStarted", handleQuestionStarted);
             connection.off("PlayerJoined", handlePlayerJoined);
             connection.off("GameStarted", handleGameStart);
         }
-    }, []);
+    }, [nickname]);
 
     async function handleSubmitAnswer(answerId: number) {
         try {
@@ -59,7 +67,14 @@ function PlayerLobby({pin, nickname, initialPlayers}: PlayerLobbyProps) {
             }
         }
     }
-
+    if (isKicked) {
+        return(
+            <div>
+            <h2>You have been kicked from the game</h2>
+            <button onClick={()=> onLeave()}>← Back</button>
+             </div>
+        )
+    }
     if (scoreList !== null) {
         return (
             <div>

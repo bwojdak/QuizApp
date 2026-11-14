@@ -16,27 +16,39 @@ function HostLobby({pin}: HostLobbyProps) {
         function handlePlayerJoined(nickname: string) {
             setPlayers(prevPlayers => [...prevPlayers, nickname]);
         }
-
+        function handlePlayerKicked(nickname: string) {
+            setPlayers(prevPlayers => prevPlayers.filter(player => player !== nickname));
+        }
         function handleGameEnded(ranking: PlayerScore[]) {
             setScoreList(ranking);
         }
-
+        connection.on("PlayerKicked", handlePlayerKicked);
         connection.on("PlayerJoined", handlePlayerJoined);
         connection.on("GameEnded", handleGameEnded);
         return () => {
             connection.off("GameEnded", handleGameEnded);
             connection.off("PlayerJoined", handlePlayerJoined);
+            connection.off("PlayerKicked", handlePlayerKicked);
         }
     }, []);
-
+    
     async function handleStartGame() {
         setError(null);
         try {
             await connection.invoke("StartGame", pin)
             setIsStarted(true);
         } catch (err) {
-            console.error(err)
+            console.error(err);
             setError("Unable to start game");
+        }
+    }
+    async function handleKickPlayer(nickname: string) {
+        setError(null);
+        try {
+            await connection.invoke("KickPlayer", pin,nickname);
+        }catch(err) {
+                console.error(err);
+                setError("Failed to kick player");
         }
     }
 
@@ -64,7 +76,7 @@ function HostLobby({pin}: HostLobbyProps) {
             <h2>Players:</h2>
             <ul>
                 <li>Host (You)</li>
-                {players.map(nickname => (<li key={nickname}>{nickname}</li>))}
+                {players.map(nickname => (<li key={nickname}>{nickname} <button onClick={()=>handleKickPlayer(nickname)}>Kick</button></li>))}
             </ul>
             <button onClick={handleStartGame}>Start game</button>
             {error && <p>{error}</p>}

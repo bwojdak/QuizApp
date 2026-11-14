@@ -68,14 +68,16 @@ public class GameHub : Hub
             if (answeredQuestionId == game.CurrentQuestionId)
                 throw new HubException("You already answered the question");
         }
+
         var elapsed = (DateTime.UtcNow - game.QuestionStartedAt).TotalSeconds;
         var answer = await _context.Answers
             .Include(a => a.Question).FirstOrDefaultAsync(a => a.Id == answerId);
         if (answer is null || answer.QuestionId != game.CurrentQuestionId) throw new HubException("Invalid answer");
         if (elapsed > answer.Question.TimeLimitSeconds) throw new HubException("Time limit exceeded");
         game.Answers[nickname] = answer.QuestionId;
-        int points = answer.IsCorrect ?
-            (int)Math.Round(100 + 100 * (1 - elapsed / answer.Question.TimeLimitSeconds)) : 0;
+        int points = answer.IsCorrect
+            ? (int)Math.Round(100 + 100 * (1 - elapsed / answer.Question.TimeLimitSeconds))
+            : 0;
         game.Scores.AddOrUpdate(nickname, points, (key, oldValue) => oldValue + points);
         return new AnswerResultDto(points, answer.IsCorrect);
     }
@@ -94,5 +96,25 @@ public class GameHub : Hub
         else throw new HubException("You are not in this game");
 
         return Clients.Group(pin).SendAsync("ChatMessage", sender, message);
+    }
+
+    public async Task KickPlayer(string pin, string nickname)
+    {
+        GameSession? game = _gameStore.Get(pin);
+        if (game is null) throw new HubException("Game not found");
+
+        if (Context.ConnectionId != game.HostConnectionId)
+            throw new HubException("You are not permitted to do this");
+
+        if (game.IsStarted) throw new HubException("Game already started");
+
+        var player = game.Players.FirstOrDefault(p => p.Value == nickname);
+        if (player.Key is null) throw new HubException("Player not found");
+
+        game.Players.TryRemove(player);
+        
+        await Clients.Group(pin).SendAsync("PlayerKicked", nickname);
+        
+        await Groups.RemoveFromGroupAsync(player.Key, pin);
     }
 }
