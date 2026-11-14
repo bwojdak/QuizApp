@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿
+using System.ComponentModel.DataAnnotations;
 
 namespace Quiz.Api.DTOs;
 
@@ -14,6 +15,7 @@ public record AnswerResultDto(int Points, bool IsCorrect);
 
 public record PlayerScore(string Nickname, int Points);
 
+public record JoinGameResultDto(string Token, List<string> Players);
 public record QuestionCreateDto(
     [Required] [MaxLength(300)] string Content,
     [Range(5, 120)] int TimeLimitSeconds,

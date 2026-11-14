@@ -31,6 +31,7 @@ export type PlayerSession = {
    pin: string;
    nickname: string;
    players: string[];
+   token: string;
 }
 export type ChatMessage = {
    sender: string;
@@ -53,4 +54,8 @@ export type AnswerResult = {
 export type PlayerScore = {
    nickname: string;
    points: number;
+}
+export type JoinGameResult = {
+   token: string;
+   players: string[];
 }

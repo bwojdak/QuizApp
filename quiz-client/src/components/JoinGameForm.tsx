@@ -1,7 +1,8 @@
 ﻿import {useState} from "react";
 import {connection} from "../signalr.ts";
+import type {JoinGameResult} from "../types.ts";
 type JoinGameFormProps = {
-    onJoinGame: (pin: string, nickname: string, players: string[]) => void;
+    onJoinGame: (pin: string, nickname: string, players: string[], token: string) => void;
 }
 
 function JoinGameForm({onJoinGame}: JoinGameFormProps) {
@@ -12,8 +13,8 @@ function JoinGameForm({onJoinGame}: JoinGameFormProps) {
         e.preventDefault();
         setError(null);
         try{
-            const players = await connection.invoke<string[]>("JoinGame", pin, nickname);
-            onJoinGame(pin,nickname, players);
+            const result = await connection.invoke<JoinGameResult>("JoinGame", pin, nickname);
+            onJoinGame(pin,nickname,result.players,result.token);
         }catch(err){
             console.error(err);
             if(err instanceof Error){

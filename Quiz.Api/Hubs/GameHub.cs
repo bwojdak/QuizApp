@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Quiz.Api.Data;
 using Quiz.Api.DTOs;
 using Quiz.Api.Game;
-using Quiz.Api.Models;
+
 
 namespace Quiz.Api.Hubs;
 
@@ -28,7 +28,7 @@ public class GameHub : Hub
         return game.Pin;
     }
 
-    public async Task<List<string>> JoinGame(string pin, string nickname)
+    public async Task<JoinGameResultDto> JoinGame(string pin, string nickname)
     {
         GameSession? game = _gameStore.Get(pin);
         if (game is null) throw new HubException("Game not found");
@@ -37,8 +37,25 @@ public class GameHub : Hub
         if (game.Players.Values.Contains(nickname)) throw new HubException("Your nickname is taken");
         if (!game.Players.TryAdd(Context.ConnectionId, nickname))
             throw new HubException("You already joined this game");
+        string token = Guid.NewGuid().ToString();
+        game.Tokens[token] = nickname;
+        JoinGameResultDto joinGameResultDto = new JoinGameResultDto(token,game.Players.Values.ToList());
         await Groups.AddToGroupAsync(Context.ConnectionId, pin);
         await Clients.OthersInGroup(pin).SendAsync("PlayerJoined", nickname);
+        return joinGameResultDto;
+    }
+
+    public async Task<List<string>> RejoinGame(string pin, string token)
+    {
+        GameSession? game = _gameStore.Get(pin);
+        if (game is null) throw new HubException("Game not found");
+        if (!game.Tokens.ContainsKey(token)) throw new HubException("You can't join this game");
+        string nickname = game.Tokens[token];
+        var player = game.Players.FirstOrDefault(p => p.Value == nickname);
+        if (player.Key is null) throw new HubException("Player not found");
+        game.Players.TryRemove(player);
+        game.Players[Context.ConnectionId] = nickname;
+        await Groups.AddToGroupAsync(Context.ConnectionId, pin);
         return game.Players.Values.ToList();
     }
 
@@ -109,8 +126,11 @@ public class GameHub : Hub
 
         var player = game.Players.FirstOrDefault(p => p.Value == nickname);
         if (player.Key is null) throw new HubException("Player not found");
+        var playerToken = game.Tokens.FirstOrDefault(p => p.Value == nickname);
+        if (playerToken.Key is null) throw new HubException("Player not found");
 
         game.Players.TryRemove(player);
+        game.Tokens.TryRemove(playerToken);
         
         await Clients.Group(pin).SendAsync("PlayerKicked", nickname);
         

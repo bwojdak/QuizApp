@@ -18,7 +18,17 @@ function App() {
             try {
                 if (connection.state !== "Disconnected") return;
                 await connection.start();
-                console.log("SignalR connected");
+                const saved = sessionStorage.getItem("playerSession");
+                if(saved!==null){
+                    const data = JSON.parse(saved);
+                    try{
+                        const players = await connection.invoke<string[]>("RejoinGame",data.pin,data.token);
+                        setPlayerSession({...data,players})
+                    }catch (err){
+                        console.error(err);
+                        sessionStorage.removeItem("playerSession");
+                    }
+                }
             } catch (err) {
                 console.error(err);
             }
@@ -26,9 +36,18 @@ function App() {
 
         connect();
     }, [])
+    function handleJoinGame(pin: string,nickname: string,players: string[],token: string) {
+        setPlayerSession({pin, nickname, players,token})
+        const data = {pin, nickname, token};
+        sessionStorage.setItem("playerSession", JSON.stringify(data))
+    }
+    function handleLeave() {
+        setPlayerSession(null)
+        sessionStorage.removeItem("playerSession")
+    }
     if (playerSession !== null) {
         return <PlayerLobby pin={playerSession.pin} nickname={playerSession.nickname}
-                            initialPlayers={playerSession.players} onLeave={() => setPlayerSession(null)}/>;
+                            initialPlayers={playerSession.players} onLeave={handleLeave}/>;
     }
     if (gamePin !== null) {
         return <HostLobby pin={gamePin}/>
@@ -36,7 +55,7 @@ function App() {
     if (selectedQuizId === null) {
         return <div>
             <JoinGameForm
-                onJoinGame={(pin, nickname, players) => setPlayerSession({pin, nickname, players})}></JoinGameForm>
+                onJoinGame={handleJoinGame}></JoinGameForm>
             <AddQuizForm onCreated={() => setRefreshKey(k => k + 1)}/>
             <QuizList refreshKey={refreshKey} onSelect={id => setSelectedQuizId(id)}
                       onGameCreated={gamePin => setGamePin(gamePin)}/>

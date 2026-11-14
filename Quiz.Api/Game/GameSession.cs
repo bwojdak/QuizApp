@@ -14,5 +14,5 @@ public class GameSession
     public ConcurrentDictionary<string, int> Answers { get; set; } = new();
     
     public ConcurrentDictionary<string, string> Players { get; set; } = new(); 
-    
+    public ConcurrentDictionary<string, string> Tokens { get; set; } = new(); //token,nick
 }
