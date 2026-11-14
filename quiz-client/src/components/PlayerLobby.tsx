@@ -10,12 +10,12 @@ type PlayerLobbyProps = {
 
 function PlayerLobby({pin, nickname, initialPlayers,onLeave}: PlayerLobbyProps) {
     const [players, setPlayers] = useState<string[]>(initialPlayers);
-    const [isStarted, setIsStarted] = useState<boolean>(false);
     const [question, setQuestion] = useState<PlayerQuestion | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [answerResult, setAnswerResult] = useState<AnswerResult | null>(null);
     const [scoreList, setScoreList] = useState<PlayerScore[] | null>(null);
     const [isKicked, setIsKicked] = useState<boolean>(false);
+    const [countdown, setCountdown] = useState<number | null>(null);
     useEffect(() => {
         function handlePlayerJoined(player: string) {
             setPlayers(prevPlayers => [...prevPlayers, player]);
@@ -26,10 +26,6 @@ function PlayerLobby({pin, nickname, initialPlayers,onLeave}: PlayerLobbyProps) 
                 setIsKicked(true);
             }
         }
-        function handleGameStart() {
-            setIsStarted(true);
-        }
-
         function handleQuestionStarted(q: PlayerQuestion) {
             setQuestion(q);
             setAnswerResult(null);
@@ -37,18 +33,20 @@ function PlayerLobby({pin, nickname, initialPlayers,onLeave}: PlayerLobbyProps) 
         function handleGameEnded(ranking: PlayerScore[]) {
             setScoreList(ranking)
         }
+        function handleCountdown(seconds: number){
+            setCountdown(seconds);
+        }
         connection.on("PlayerKicked", handlePlayerKicked);
         connection.on("GameEnded", handleGameEnded)
         connection.on("QuestionStarted", handleQuestionStarted);
-        connection.on("GameStarted", handleGameStart);
         connection.on("PlayerJoined", handlePlayerJoined);
-
+        connection.on("Countdown", handleCountdown);
         return () => {
+            connection.off("Countdown", handleCountdown);
             connection.off("PlayerKicked", handlePlayerKicked);
             connection.off("GameEnded", handleGameEnded);
             connection.off("QuestionStarted", handleQuestionStarted);
             connection.off("PlayerJoined", handlePlayerJoined);
-            connection.off("GameStarted", handleGameStart);
         }
     }, [nickname]);
 
@@ -106,9 +104,11 @@ function PlayerLobby({pin, nickname, initialPlayers,onLeave}: PlayerLobbyProps) 
             </div>
         )
     }
-    if (isStarted) {
+    if(countdown !== null) {
         return (
-            <h1>Game Started</h1>
+            <div>
+                <h1>Game is starting in {countdown}..</h1>
+            </div>
         )
     }
     return (

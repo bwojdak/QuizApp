@@ -53,7 +53,6 @@ public class GameHub : Hub
             .AnyAsync();
         if (!hasQuestion) throw new HubException("Quiz has no questions");
         game.IsStarted = true;
-        await Clients.Group(pin).SendAsync("GameStarted");
         _ = _gameRunner.RunGame(pin);
     }
 

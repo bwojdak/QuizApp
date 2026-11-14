@@ -42,6 +42,12 @@ public class GameRunner
         {
             game.Scores.TryAdd(nickname, 0);
         }
+        
+        for (int i = 5; i > 0; i--)
+        {
+            await _hubContext.Clients.Group(pin).SendAsync("Countdown",i);
+            await Task.Delay(TimeSpan.FromSeconds(1));
+        }
         foreach (var question in questions)
         {
             game.CurrentQuestionId = question.Id;

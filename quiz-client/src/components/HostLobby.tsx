@@ -1,7 +1,7 @@
 ﻿import {useState, useEffect} from "react";
 import {connection} from "../signalr.ts";
 import LobbyChat from "./LobbyChat.tsx";
-import type {PlayerScore} from "../types.ts";
+import type {PlayerQuestion, PlayerScore} from "../types.ts";
 
 type HostLobbyProps = {
     pin: string;
@@ -10,8 +10,9 @@ type HostLobbyProps = {
 function HostLobby({pin}: HostLobbyProps) {
     const [players, setPlayers] = useState<string[]>([]);
     const [error, setError] = useState<string | null>(null);
-    const [isStarted, setIsStarted] = useState<boolean>(false);
     const [scoreList, setScoreList] = useState<PlayerScore[] | null>(null);
+    const [countdown, setCountdown] = useState<number | null>(null);
+    const [question, setQuestion] = useState<PlayerQuestion | null>(null);
     useEffect(() => {
         function handlePlayerJoined(nickname: string) {
             setPlayers(prevPlayers => [...prevPlayers, nickname]);
@@ -22,10 +23,20 @@ function HostLobby({pin}: HostLobbyProps) {
         function handleGameEnded(ranking: PlayerScore[]) {
             setScoreList(ranking);
         }
+        function handleQuestionStarted(q: PlayerQuestion) {
+            setQuestion(q);
+        }
+        function handleCountdown(seconds: number){
+            setCountdown(seconds);
+        }
+        connection.on("QuestionStarted", handleQuestionStarted)
+        connection.on("Countdown", handleCountdown);
         connection.on("PlayerKicked", handlePlayerKicked);
         connection.on("PlayerJoined", handlePlayerJoined);
         connection.on("GameEnded", handleGameEnded);
         return () => {
+            connection.off("QuestionStarted", handleQuestionStarted)
+            connection.off("Countdown", handleCountdown);
             connection.off("GameEnded", handleGameEnded);
             connection.off("PlayerJoined", handlePlayerJoined);
             connection.off("PlayerKicked", handlePlayerKicked);
@@ -36,7 +47,6 @@ function HostLobby({pin}: HostLobbyProps) {
         setError(null);
         try {
             await connection.invoke("StartGame", pin)
-            setIsStarted(true);
         } catch (err) {
             console.error(err);
             setError("Unable to start game");
@@ -65,9 +75,23 @@ function HostLobby({pin}: HostLobbyProps) {
             </div>
         )
     }
-    if (isStarted) {
+    if (question !== null) {
         return (
-            <h1>Game Started</h1>
+            <div>
+                <h1>{question.content}</h1>
+                <ul>
+                    {question.answers.map(a => <li key={a.id}>
+                        <label>{a.content}</label>
+                    </li>)}
+                </ul>
+            </div>
+        )
+    }
+    if(countdown !== null) {
+        return (
+            <div>
+                <h1>Game is starting in {countdown}..</h1>
+            </div>
         )
     }
     return (
