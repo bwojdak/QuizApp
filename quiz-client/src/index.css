@@ -1,3 +1,4 @@
+
 body{
   margin: 0;
   font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
@@ -32,15 +33,19 @@ body{
 
 input,textarea,select{
   display: block;
-  width: 100%;
+  width: 80%;
   box-sizing: border-box;
   padding: 12px;
-  margin-bottom: 10px;
+  margin: 0 auto 10px;
   font-size: 16px;
   border: none;
   border-radius: 10px;
   background: #E9E4F2;
   font-family: inherit;
+}
+.addQuestionCard input{
+  width: 100%;
+  margin: 0 0 10px 0;
 }
 button{
   margin: 10px;
@@ -85,6 +90,68 @@ ul{
   overflow-y: auto;
   text-align: left;
   padding: 0;
+  scrollbar-width: thin;
+  scrollbar-color: #9884BD #463669;
+}
+.quizzes{
+  max-height: 300px;
+  overflow-y: auto;
+  text-align: center;
+  padding: 0;
+  scrollbar-width: thin;
+  scrollbar-color: #9884BD #463669;
+}
+.quizItem{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #463669;
+  border-radius: 15px;
+  margin-bottom: 10px;
+  text-align: left;
+  transition: background 0.15s;
+}
+.quizItem:hover{
+  background: #57437D;
+}
+.hint{
+  font-size: 13px;
+  opacity: 0.6;
+  font-style: italic;
+  margin: 0 0 10px;
+}
+.quizSelectTrigger{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  width: 80%;
+  margin: 0 auto 10px;
+  padding: 14px;
+  background: #E9E4F2;
+  color: #3D2E59;
+  font-size: 18px;
+  font-weight: bold;
+}
+.quizItem.selected{
+  background: #9884BD;
+  outline: 2px solid #FFFFFF;
+  outline-offset: -2px;
+}
+.quizInfo{
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 16px;
+  cursor: pointer;
+}
+.quizTitle{
+  font-weight: bold;
+  font-size: 18px;
+}
+.quizCount{
+  font-size: 14px;
+  opacity: 0.7;
 }
 .chatForm{
   display: flex;
@@ -230,7 +297,7 @@ input[type="number"]{
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 0 7px 0;
+  padding: 0 0 8px 0;
 }
 .cardHeader {
   position: relative;

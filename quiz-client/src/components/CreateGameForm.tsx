@@ -10,7 +10,9 @@ function CreateGameForm({onGameCreated}: CreateGameFormProps) {
     const [startGameError, setStartGameError] = useState<string | null>(null);
     const [quizzes, setQuizzes] = useState<QuizSummary[]>([]);
     const [error, setError] = useState<string | null>(null);
-    const [selectedQuizId, setSelectedQuizId] = useState<string>("");
+    const [selectedQuizId, setSelectedQuizId] = useState<number | null>(null);
+    const [isListOpen, setIsListOpen] = useState<boolean>(false);
+    const selectedQuiz = quizzes.find(q => q.id === selectedQuizId);
     useEffect(() => {
         async function load() {
             try {
@@ -38,7 +40,8 @@ function CreateGameForm({onGameCreated}: CreateGameFormProps) {
     }
     function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
-        handleStartGame(Number(selectedQuizId))
+        if (selectedQuizId === null) return;
+        handleStartGame(selectedQuizId)
     }
 
     return (
@@ -46,19 +49,25 @@ function CreateGameForm({onGameCreated}: CreateGameFormProps) {
             <h1 className="cardTitle">Create game</h1>
             {error && <p>{error}</p>}{startGameError && <p>{startGameError}</p>}
             <form onSubmit={handleSubmit}>
-                <select
-                    value={selectedQuizId}
-                    onChange={(e) => setSelectedQuizId(e.target.value)}>
-                    <option value="" disabled>
-                        Select quiz
-                    </option>
-                    {quizzes.map((q) => (
-                        <option key={q.id} value={q.id}>
-                            {q.title} ({q.questionsCount} questions)
-                        </option>
+                <button type="button" className="quizSelectTrigger" onClick={() => setIsListOpen(open => !open)}>
+                    <span>{selectedQuiz ? selectedQuiz.title : "Select quiz"}</span>
+                    <span>{isListOpen ? "▲" : "▼"}</span>
+                </button>
+                {isListOpen && <ul className="quizzes">
+                    {quizzes.map(q => (
+                        <li key={q.id}
+                            className={q.id === selectedQuizId ? "quizItem selected" : "quizItem"}>
+                            <div className="quizInfo" onClick={() => {
+                                setSelectedQuizId(q.id);
+                                setIsListOpen(false);
+                            }}>
+                                <span className="quizTitle">{q.title}</span>
+                                <span className="quizCount">{q.questionsCount} questions</span>
+                            </div>
+                        </li>
                     ))}
-                </select>
-                <button type="submit" disabled={!selectedQuizId}>Start game</button>
+                </ul>}
+                <button type="submit" disabled={selectedQuizId === null}>Start game</button>
             </form>
         </div>
     )

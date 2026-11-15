@@ -39,10 +39,14 @@ function QuizList({onSelect}: QuizListProps) {
             <div className="cardHeader">
             <h1 className="cardTitle">My quizzes</h1><button onClick={()=>setAddQuiz(true)} className="addQuizButton">+</button>
             </div>
-            {quizzes.length>0?<ul>
+            {quizzes.length > 0 && <p className="hint">Click a quiz to edit</p>}
+            {quizzes.length>0?<ul className="quizzes">
                 {quizzes.map(q =>
-                    <li key={q.id}>
-                        <span onClick={() => onSelect(q.id)}> {q.title} {q.questionsCount} questions</span>
+                    <li key={q.id} className="quizItem">
+                        <div className="quizInfo" onClick={() => onSelect(q.id)}>
+                            <span className="quizTitle">{q.title}</span>
+                            <span className="quizCount">{q.questionsCount} questions</span>
+                        </div>
                     </li>)
                 }
             </ul> : <p>No quizzes yet.</p>}
