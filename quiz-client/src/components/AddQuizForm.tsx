@@ -1,10 +1,11 @@
 ﻿import {useState} from 'react';
 import type {QuizCreate} from "../types";
 type AddQuizFormProps = {
+    onCancel: () => void;
     onCreated: () => void;
 }
 
-function AddQuizForm({onCreated}: AddQuizFormProps) {
+function AddQuizForm({onCancel,onCreated} : AddQuizFormProps) {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [error, setError] = useState<string | null>(null);
@@ -20,9 +21,9 @@ function AddQuizForm({onCreated}: AddQuizFormProps) {
                 body: JSON.stringify(dto),
             });
             if (!response.ok) throw new Error("Failed to add Quiz");
+            onCreated();
             setTitle("");
             setDescription("");
-            onCreated();
         } catch {
             setError("Failed to add quiz");
         }
@@ -42,7 +43,7 @@ function AddQuizForm({onCreated}: AddQuizFormProps) {
             onChange={e => setDescription(e.target.value)}
         />
         <div>
-            <button type='submit'>Add</button>
+            <button type='submit'>Add</button><button type='button' onClick={onCancel}>Cancel</button>
         </div>
     </form>)
 

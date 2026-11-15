@@ -1,5 +1,4 @@
 import QuizList from "./components/QuizList";
-import AddQuizForm from "./components/AddQuizForm.tsx";
 import {useEffect, useState} from "react";
 import QuizDetailsView from "./components/QuizDetailsView.tsx";
 import {connection} from "./signalr.ts";
@@ -8,10 +7,10 @@ import type {PlayerSession} from "./types.ts";
 import HostLobby from "./components/HostLobby.tsx";
 import PlayerLobby from "./components/PlayerLobby.tsx";
 import {PLAYER_SESSION_KEY} from "./storageKeys.ts";
+import CreateGameForm from "./components/CreateGameForm.tsx";
 
 function App() {
     const [selectedQuizId, setSelectedQuizId] = useState<number | null>(null);
-    const [refreshKey, setRefreshKey] = useState<number>(0);
     const [gamePin, setGamePin] = useState<string | null>(null);
     const [playerSession, setPlayerSession] = useState<PlayerSession | null>(null);
     useEffect(() => {
@@ -20,12 +19,12 @@ function App() {
                 if (connection.state !== "Disconnected") return;
                 await connection.start();
                 const saved = sessionStorage.getItem(PLAYER_SESSION_KEY);
-                if(saved!==null){
+                if (saved !== null) {
                     const data = JSON.parse(saved);
-                    try{
-                        const players = await connection.invoke<string[]>("RejoinGame",data.pin,data.token);
-                        setPlayerSession({...data,players})
-                    }catch (err){
+                    try {
+                        const players = await connection.invoke<string[]>("RejoinGame", data.pin, data.token);
+                        setPlayerSession({...data, players})
+                    } catch (err) {
                         console.error(err);
                         sessionStorage.removeItem(PLAYER_SESSION_KEY);
                     }
@@ -37,29 +36,30 @@ function App() {
 
         connect();
     }, [])
-    function handleJoinGame(pin: string,nickname: string,players: string[],token: string) {
-        setPlayerSession({pin, nickname, players,token})
+
+    function handleJoinGame(pin: string, nickname: string, players: string[], token: string) {
+        setPlayerSession({pin, nickname, players, token})
         const data = {pin, nickname, token};
         sessionStorage.setItem(PLAYER_SESSION_KEY, JSON.stringify(data))
     }
+
     function handleLeave() {
         setPlayerSession(null)
         sessionStorage.removeItem(PLAYER_SESSION_KEY)
     }
+
     if (playerSession !== null) {
         return <PlayerLobby pin={playerSession.pin} nickname={playerSession.nickname}
                             initialPlayers={playerSession.players} onLeave={handleLeave}/>;
     }
     if (gamePin !== null) {
-        return <HostLobby pin={gamePin} onLeave={()=> setGamePin(null)}/>
+        return <HostLobby pin={gamePin} onLeave={() => setGamePin(null)}/>
     }
     if (selectedQuizId === null) {
         return <div>
-            <JoinGameForm
-                onJoinGame={handleJoinGame}></JoinGameForm>
-            <AddQuizForm onCreated={() => setRefreshKey(k => k + 1)}/>
-            <QuizList refreshKey={refreshKey} onSelect={id => setSelectedQuizId(id)}
-                      onGameCreated={gamePin => setGamePin(gamePin)}/>
+            <JoinGameForm onJoinGame={handleJoinGame}></JoinGameForm>
+            <CreateGameForm onGameCreated={gamePin => setGamePin(gamePin)}></CreateGameForm>
+            <QuizList onSelect={id => setSelectedQuizId(id)}/>
         </div>;
     }
     return (<QuizDetailsView quizId={selectedQuizId} onBack={() => setSelectedQuizId(null)}/>)

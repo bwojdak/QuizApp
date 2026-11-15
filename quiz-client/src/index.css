@@ -30,7 +30,7 @@ body{
   margin-top: 0px;
 }
 
-input,textarea{
+input,textarea,select{
   display: block;
   width: 100%;
   box-sizing: border-box;
@@ -222,7 +222,32 @@ input[type="number"]{
 .___{
   background: #26890c !important;  
 }
+.addQuizButton {
+  width: 7%;
+  height: 65%;
+  border-radius: 50%;
+  font-size: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0 7px 0;
+}
+.cardHeader {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-
+.cardHeader .addQuizButton {
+  position: absolute;
+  right: 25%;
+  top: 20%;
+  transform: translateY(-50%);
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
 
