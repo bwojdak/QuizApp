@@ -18,6 +18,14 @@ body{
   margin: 0 auto;
   margin-bottom: 20px;
 }
+.addQuestionCard{
+  background: #6B5396;
+  padding: 20px;
+  border-radius: 30px;
+  max-width: 600px;
+  margin: 0 auto;
+  margin-bottom: 20px;
+}
 .cardTitle{
   margin-top: 0px;
 }
@@ -120,9 +128,6 @@ ul{
   background: #9884BD;
   
 }
-li:hover{
-  filter: brightness(80%);
-}
 
 .ranking li{
   display: flex;
@@ -153,7 +158,70 @@ li:hover{
   font-weight: bold;
   margin:5px;
 }
-
+.answerRow{
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 10px
+}
+.answerRow input{
+  margin: 0px;
+}
+input[type="radio"]{
+  width: auto;
+  margin: 5px;
+  transform: scale(2);
+}
+input[type="number"]{
+  width: auto;
+}
+.timeLimitLabel{
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+.timeLimitLabel input{
+  margin-bottom: 0px;
+}
+.questionList{
+  padding: 0;
+}
+.questionList > li {
+  background: #6B5396;
+  padding: 20px;
+  border-radius: 30px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+.questionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+}
+.smallButton{
+  width:auto;
+  padding: 6px 12px;
+  margin: 0 0 0 6px;
+  font-size: 14px;
+}
+.questionAnswers{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  padding: 0;
+  margin: 12px 0 0;
+}
+.questionAnswers li{
+  background: #57437D;
+  padding: 8px;
+  border-radius: 15px;
+  text-align: center;
+}
+.___{
+  background: #26890c !important;  
+}
 
 
 

@@ -13,7 +13,7 @@ function QuizDetailsView({quizId, onBack}: QuizDetailsViewProps) {
     const [error, setError] = useState<string | null>(null);
     const [deleteError, setDeleteError] = useState<string | null>(null);
     const [refreshKey, setRefreshKey] = useState<number>(0);
-    const [editingQuestionId, setEditingQuestionId] = useState<number|null>(null);
+    const [editingQuestionId, setEditingQuestionId] = useState<number | null>(null);
     useEffect(() => {
         async function load() {
             try {
@@ -42,36 +42,45 @@ function QuizDetailsView({quizId, onBack}: QuizDetailsViewProps) {
             setDeleteError('Failed to delete');
         }
     }
-    
+
 
     if (loading) return <div>Loading...</div>;
     if (error) return <div>{error}</div>;
     if (quiz === null) return <div>No quiz found</div>;
     return (
-        <div>
+        <div className="card">
             <button onClick={onBack}>← Back</button>
             <h1>{quiz.title}</h1>
             {quiz.description && <p>{quiz.description}</p>}
             {deleteError && <p>{deleteError}</p>}
             {quiz.questions.length > 0 ? (
-                <ul>
+                <ul className="questionList">
                     {quiz.questions.map(q => (
                         <li key={q.id}>
                             {editingQuestionId !== q.id ? (
                                     <div>
-                                        {q.content}
-                                        <button onClick={() => handleDelete(q.id)}>Delete</button>
-                                        <button onClick={() => setEditingQuestionId(q.id)}>Edit</button>
-                                        <ul>
+                                        <div className="questionHeader">
+                                            <span>{q.content}</span>
+                                            <span>
+                                        <button className="smallButton"
+                                                onClick={() => handleDelete(q.id)}>Delete</button>
+                                        <button className="smallButton"
+                                                onClick={() => setEditingQuestionId(q.id)}>Edit</button>
+                                                </span>
+                                        </div>
+                                        <ul className="questionAnswers">
                                             {q.answers.map(a => (
-                                                <li key={a.id}>
-                                                    {a.content} {a.isCorrect && ' ✅'}
+                                                <li key={a.id} className={a.isCorrect ? "___" : ""}>
+                                                    {a.content}
                                                 </li>
                                             ))}
                                         </ul>
                                     </div>)
                                 : (<div>
-                                        <AddQuestionForm question={q} quizId={quiz.id} onCreated={() => {setRefreshKey(k => k + 1);setEditingQuestionId(null)}}/>
+                                        <AddQuestionForm question={q} quizId={quiz.id} onCreated={() => {
+                                            setRefreshKey(k => k + 1);
+                                            setEditingQuestionId(null)
+                                        }}/>
                                         <button onClick={() => setEditingQuestionId(null)}>Cancel</button>
                                     </div>
                                 )}

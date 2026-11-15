@@ -56,29 +56,31 @@ function AddQuestionForm({quizId, onCreated, question}: AddQuestionFormProps) {
     }
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form className="addQuestionCard" onSubmit={handleSubmit}>
             <input value={content}
                    placeholder="Question"
                    onChange={e => setContent(e.target.value)}/>
+            <label className="timeLimitLabel">
             <input
                 type="number"
                 min={5}
                 max={120}
                 value={timeLimit}
                 onChange={e => setTimeLimit(Number(e.target.value))}
-            />
+            />Time limit (s)
+            </label>
             {answers.map((a, i) => (
-                <div key={i}>
+                <div key={i} className="answerRow">
+                    <input
+                        value={a.content}
+                        placeholder={`Answer ${i + 1}`}
+                        onChange={e => updateAnswers(i, e.target.value)}
+                    />
                     <input
                         type="radio"
                         name="correct"
                         checked={a.isCorrect}
                         onChange={() => setCorrect(i)}
-                    />
-                    <input
-                        value={a.content}
-                        placeholder={`Answer ${i + 1}`}
-                        onChange={e => updateAnswers(i, e.target.value)}
                     />
                 </div>
             ))}
