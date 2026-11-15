@@ -105,17 +105,17 @@ function PlayerLobby({pin, nickname, initialPlayers, onLeave}: PlayerLobbyProps)
     }
     if (question !== null) {
         return (
-            <div>
-                <h1>{question.content}</h1>
+            <div className="card">
+                <h1 className="cardTitle">{question.content}</h1>
                 <ul className="answers">
                     {question.answers.map(a => <li key={a.id}>
                         <button onClick={() => handleSubmitAnswer(a.id)}>{a.content}</button>
                     </li>)}
                 </ul>
                 {answerResult != null && (
-                    <>
+                    <p className={answerResult.isCorrect ? "correct" : "wrong"}>
                         {answerResult.isCorrect ? "Good answer!" : "Bad answer!"} {answerResult.points} points
-                    </>
+                    </p>
                 )}
                 {error && <p>{error}</p>}
             </div>

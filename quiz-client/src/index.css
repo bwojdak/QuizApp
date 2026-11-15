@@ -110,19 +110,44 @@ ul{
   align-items: center;
   justify-content: center;
   font-weight: bold;
+  background: #9884BD;
 }
 .answers button{
   width: 100%;
   align-self: stretch;
   margin: 0;
-  background: transparent;
   font-size: inherit;
+  background: #9884BD;
+  
+}
+li:hover{
+  filter: brightness(80%);
 }
 
-.answers li:nth-child(1) { background: #e21b3c;}
-.answers li:nth-child(2)  { background: cornflowerblue; }
-.answers li:nth-child(3)  { background: yellowgreen; }
-.answers li:nth-child(4)  { background: coral; }
+.ranking li{
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
+  margin-bottom: 10px;
+  background: #57437D;
+  border-radius: 15px;
+  font-size: 20px;
+}
+.ranking{
+  padding: 0;
+}
+.correct {
+  background: green;  
+  padding: 12px;
+  border-radius: 10px;
+  font-weight: bold;
+}
+.wrong {
+  background: red;
+  padding: 12px;
+  border-radius: 10px;
+  font-weight: bold;
+}
 
 
 
