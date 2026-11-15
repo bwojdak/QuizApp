@@ -41,18 +41,18 @@ function QuizList({refreshKey, onSelect,onGameCreated}: QuizListProps) {
         }
     }
 
-    if (loading) return <div>Loading...</div>;
-    if (error) return <div>{error}</div>;
-    if (quizzes.length === 0) return <div>No quizzes to show...</div>
+    if (loading) return <div className="card">Loading...</div>;
+    if (error) return <div className="card">{error}</div>;
+    if (quizzes.length === 0) return <div className="card">No quizzes to show...</div>
     return (
-        <div>
-            <h1>My quizzes</h1>
+        <div className="card">
+            <h1 className="cardTitle">My quizzes</h1>
             {startGameError&&startGameError}
             <ul>
                 {quizzes.map(q =>
                     <li key={q.id}>
                         <span onClick={() => onSelect(q.id)}> {q.title} {q.questionsCount} questions</span>
-                        <button onClick={() => handleStartGame(q.id)}>Create Game</button>
+                        <button className="createGameButton" onClick={() => handleStartGame(q.id)}>Create Game</button>
                     </li>)
                 }
             </ul>

@@ -27,8 +27,8 @@ function JoinGameForm({onJoinGame}: JoinGameFormProps) {
         }
     }
 
-    return (<form onSubmit={handleSubmit}>
-        <h2>Join game</h2>
+    return (<form className="card" onSubmit={handleSubmit}>
+        <h1 className="cardTitle">Join game</h1>
         {error && <p>{error}</p>}
         <input
             value={pin}

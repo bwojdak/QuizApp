@@ -1,12 +1,59 @@
 body{
   margin: 0;
   font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
-  background: #443566;
-  color: #D7D3E6;
+  background: #3D2E59;
+  color: #FFFFFF;
 }
 #root{
   max-width: 800px;
   margin: 0 auto;
   padding: 16px;
   text-align: center;
+}
+.card {
+  background: #533E7A;
+  padding: 20px;
+  border-radius: 50px;
+  max-width: 600px;
+  margin: 0 auto;
+  margin-bottom: 20px;
+}
+.cardTitle{
+  margin-top: 0px;
+}
+
+input,textarea{
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  margin-bottom: 10px;
+  font-size: 16px;
+  border: none;
+  border-radius: 10px;
+  background: #E9E4F2;
+}
+button{
+  margin: 10px;
+  padding: 15px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #FFFFFF;
+  background: #9884BD;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  width: 50%;
+}
+button:hover{
+  filter: brightness(80%);
+}
+.createGameButton{
+  padding: 5px;
+  width: 25%;
+  margin: 5px;
+  font-size: 15px;
+}
+ul{
+  list-style-type: none;
 }

@@ -28,8 +28,9 @@ function AddQuizForm({onCreated}: AddQuizFormProps) {
         }
     }
 
-    return (<form onSubmit={handleSubmit}>
-        <h2>New quiz</h2>
+    return (<form className="card" onSubmit={handleSubmit}>
+        <h1 className="cardTitle">New quiz</h1>
+        {error && <p>{error}</p>}
         <input
             value={title}
             placeholder="Title"
@@ -42,7 +43,6 @@ function AddQuizForm({onCreated}: AddQuizFormProps) {
         />
         <div>
             <button type='submit'>Add</button>
-            {error && <p>{error}</p>}
         </div>
     </form>)
 
