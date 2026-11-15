@@ -114,7 +114,7 @@ function PlayerLobby({pin, nickname, initialPlayers, onLeave}: PlayerLobbyProps)
                 </ul>
                 {answerResult != null && (
                     <>
-                        {answerResult.isCorrect ? "Good answer!" : "Bad answer!"} {answerResult.points} pkt
+                        {answerResult.isCorrect ? "Good answer!" : "Bad answer!"} {answerResult.points} points
                     </>
                 )}
                 {error && <p>{error}</p>}
