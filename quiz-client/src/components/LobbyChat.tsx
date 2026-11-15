@@ -34,15 +34,16 @@ function LobbyChat({pin}: LobbyChatProps) {
     }
     return (
         <div className="chatCard">
-            <ul>
+            <h2 className="chatTitle">Chat</h2>
+            <ul className="chatMessages">
                 {messages.map((m, i) => <li key={i}>{m.sender}: {m.text}</li>)}
             </ul>
-            <form onSubmit={handleSubmit}>
+            <form className="chatForm" onSubmit={handleSubmit}>
                 <input
                     value={text}
                     onChange={(e) => setText(e.target.value)}
                 />
-                <button type="submit">Send</button>
+                <button className="chatFormButton" type="submit">Send</button>
             </form>
             {error && <p>{error}</p>}
         </div>

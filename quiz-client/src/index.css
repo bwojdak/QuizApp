@@ -32,6 +32,7 @@ input,textarea{
   border: none;
   border-radius: 10px;
   background: #E9E4F2;
+  font-family: inherit;
 }
 button{
   margin: 10px;
@@ -44,6 +45,7 @@ button{
   border-radius: 10px;
   cursor: pointer;
   width: 50%;
+  font-family: inherit;
 }
 button:hover{
   filter: brightness(80%);
@@ -65,3 +67,33 @@ ul{
   color: red;
   font-size: 12px;
 }
+.chatCard{
+  background: #463669;
+  border-radius: 30px;
+  padding: 15px;
+}
+.chatMessages{
+  max-height: 150px;
+  overflow-y: auto;
+  text-align: left;
+  padding: 0;
+}
+.chatForm{
+  display: flex;
+  gap: 5px;
+}
+.chatForm input{
+  margin: 0;
+}
+.chatTitle{
+  margin: 0;
+  color: #6D549C
+}
+.chatFormButton{
+  margin: 0;
+}
+.pin{
+  margin: 0;
+  font-size: 75px;
+}
+

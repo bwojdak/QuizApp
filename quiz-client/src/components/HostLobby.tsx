@@ -108,7 +108,7 @@ function HostLobby({pin}: HostLobbyProps) {
     }
     return (
         <div className="card">
-            <h1>PIN: {pin}</h1>
+            <h1 className="pin">PIN: {pin}</h1>
             <h2>Players:</h2>
             <ul>
                 <li>Host (You)</li>
