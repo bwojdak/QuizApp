@@ -107,7 +107,7 @@ function PlayerLobby({pin, nickname, initialPlayers, onLeave}: PlayerLobbyProps)
         return (
             <div>
                 <h1>{question.content}</h1>
-                <ul>
+                <ul className="answers">
                     {question.answers.map(a => <li key={a.id}>
                         <button onClick={() => handleSubmitAnswer(a.id)}>{a.content}</button>
                     </li>)}
@@ -129,8 +129,8 @@ function PlayerLobby({pin, nickname, initialPlayers, onLeave}: PlayerLobbyProps)
         )
     }
     return (
-        <div>
-            <h1>Joined the game {pin} as {nickname}</h1>
+        <div className="card">
+            <h1 className="cardTitle">Joined the game {pin} as {nickname}</h1>
             <h2>Players:</h2>
             <ul>
                 <li>Host</li>

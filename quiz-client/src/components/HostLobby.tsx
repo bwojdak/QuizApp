@@ -91,8 +91,8 @@ function HostLobby({pin}: HostLobbyProps) {
         return (
             <div>
                 <h1>{question.content}</h1>
-                <ul>
-                    {question.answers.map(a => <li key={a.id}>
+                <ul className="answers">
+                    {question.answers.map(a => <li key={a.id} >
                         <label>{a.content}</label>
                     </li>)}
                 </ul>

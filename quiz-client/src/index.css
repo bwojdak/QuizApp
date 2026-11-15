@@ -96,4 +96,35 @@ ul{
   margin: 0;
   font-size: 75px;
 }
+.answers{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 0;
+}
+.answers li{
+  min-height: 100px;
+  font-size: 20px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+.answers button{
+  width: 100%;
+  align-self: stretch;
+  margin: 0;
+  background: transparent;
+  font-size: inherit;
+}
+
+.answers li:nth-child(1) { background: #e21b3c;}
+.answers li:nth-child(2)  { background: cornflowerblue; }
+.answers li:nth-child(3)  { background: yellowgreen; }
+.answers li:nth-child(4)  { background: coral; }
+
+
+
+
 
