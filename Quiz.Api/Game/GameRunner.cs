@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Quiz.Api.Data;
 using Quiz.Api.DTOs;
@@ -21,7 +22,6 @@ public class GameRunner
 
     public async Task RunGame(string pin)
     {
-        List<PlayerScore> sortedScoreList = new List<PlayerScore>();
         GameSession? game = _gameStore.Get(pin);
         if (game is null) return;
         using var scope = _scopeFactory.CreateScope();
@@ -59,18 +59,9 @@ public class GameRunner
             bool isLastQuestion = i == questions.Count - 1;
             if (isLastQuestion)
                 break; 
-            var currentRanking = game.Scores
-                .OrderByDescending(s => s.Value)
-                .Select(s => new PlayerScore(s.Key, s.Value))
-                .ToList();
-            await _hubContext.Clients.Group(pin).SendAsync("CurrentRanking", currentRanking);
+            await _hubContext.Clients.Group(pin).SendAsync("CurrentRanking", game.GetRanking());
             await Task.Delay(TimeSpan.FromSeconds(5));
         }
-
-        sortedScoreList = game.Scores
-            .OrderByDescending(s => s.Value)
-            .Select(s => new PlayerScore(s.Key, s.Value))
-            .ToList();
-        await _hubContext.Clients.Group(pin).SendAsync("GameEnded", sortedScoreList);
+        await _hubContext.Clients.Group(pin).SendAsync("GameEnded", game.GetRanking());
     }
 }

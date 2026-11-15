@@ -49,8 +49,7 @@ public class GameHub : Hub
     {
         GameSession? game = _gameStore.Get(pin);
         if (game is null) throw new HubException("Game not found");
-        if (!game.Tokens.ContainsKey(token)) throw new HubException("You can't join this game");
-        string nickname = game.Tokens[token];
+        if (!game.Tokens.TryGetValue(token, out var nickname)) throw new HubException("You can't join this game");
         var player = game.Players.FirstOrDefault(p => p.Value == nickname);
         if (player.Key is null) throw new HubException("Player not found");
         game.Players.TryRemove(player);

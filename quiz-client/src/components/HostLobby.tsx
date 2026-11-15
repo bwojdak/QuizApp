@@ -37,8 +37,8 @@ function HostLobby({pin}: HostLobbyProps) {
             setCountdown(seconds);
         }
 
-        function handleCurrentRanking(crntRanking: PlayerScore[]) {
-            setCurrentRanking(crntRanking)
+        function handleCurrentRanking(ranking: PlayerScore[]) {
+            setCurrentRanking(ranking)
         }
 
         connection.on("CurrentRanking", handleCurrentRanking)

@@ -46,8 +46,8 @@ function PlayerLobby({pin, nickname, initialPlayers, onLeave}: PlayerLobbyProps)
             setCountdown(seconds);
         }
 
-        function handleCurrentRanking(crntRanking: PlayerScore[]) {
-            setCurrentRanking(crntRanking)
+        function handleCurrentRanking(ranking: PlayerScore[]) {
+            setCurrentRanking(ranking)
         }
 
         connection.on("CurrentRanking", handleCurrentRanking)
@@ -91,10 +91,10 @@ function PlayerLobby({pin, nickname, initialPlayers, onLeave}: PlayerLobbyProps)
         )
     }
     if (scoreList !== null) {
-        return(
+        return (
             <div>
-        <Ranking playerScores={scoreList}></Ranking>
-        <button onClick={() => onLeave()}>← Back</button>
+                <Ranking playerScores={scoreList}></Ranking>
+                <button onClick={() => onLeave()}>← Back to quiz list</button>
             </div>
         )
     }
