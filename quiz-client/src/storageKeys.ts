@@ -1,0 +1,1 @@
+﻿export const PLAYER_SESSION_KEY = "playerSession";

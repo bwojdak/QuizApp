@@ -3,6 +3,7 @@ import {connection} from "../signalr.ts";
 import LobbyChat from "./LobbyChat.tsx";
 import type {AnswerResult, PlayerQuestion, PlayerScore} from "../types.ts";
 import Ranking from "./Ranking.tsx";
+import {PLAYER_SESSION_KEY} from "../storageKeys.ts";
 
 type PlayerLobbyProps = {
     pin: string; nickname: string; initialPlayers: string[];
@@ -38,6 +39,7 @@ function PlayerLobby({pin, nickname, initialPlayers, onLeave}: PlayerLobbyProps)
 
         function handleGameEnded(ranking: PlayerScore[]) {
             setScoreList(ranking)
+            sessionStorage.removeItem(PLAYER_SESSION_KEY);
         }
 
         function handleCountdown(seconds: number) {
@@ -90,7 +92,10 @@ function PlayerLobby({pin, nickname, initialPlayers, onLeave}: PlayerLobbyProps)
     }
     if (scoreList !== null) {
         return(
+            <div>
         <Ranking playerScores={scoreList}></Ranking>
+        <button onClick={() => onLeave()}>← Back</button>
+            </div>
         )
     }
     if (currentRanking !== null) {

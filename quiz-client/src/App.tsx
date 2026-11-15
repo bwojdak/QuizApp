@@ -7,6 +7,7 @@ import JoinGameForm from "./components/JoinGameForm.tsx";
 import type {PlayerSession} from "./types.ts";
 import HostLobby from "./components/HostLobby.tsx";
 import PlayerLobby from "./components/PlayerLobby.tsx";
+import {PLAYER_SESSION_KEY} from "./storageKeys.ts";
 
 function App() {
     const [selectedQuizId, setSelectedQuizId] = useState<number | null>(null);
@@ -18,7 +19,7 @@ function App() {
             try {
                 if (connection.state !== "Disconnected") return;
                 await connection.start();
-                const saved = sessionStorage.getItem("playerSession");
+                const saved = sessionStorage.getItem(PLAYER_SESSION_KEY);
                 if(saved!==null){
                     const data = JSON.parse(saved);
                     try{
@@ -26,7 +27,7 @@ function App() {
                         setPlayerSession({...data,players})
                     }catch (err){
                         console.error(err);
-                        sessionStorage.removeItem("playerSession");
+                        sessionStorage.removeItem(PLAYER_SESSION_KEY);
                     }
                 }
             } catch (err) {
@@ -39,11 +40,11 @@ function App() {
     function handleJoinGame(pin: string,nickname: string,players: string[],token: string) {
         setPlayerSession({pin, nickname, players,token})
         const data = {pin, nickname, token};
-        sessionStorage.setItem("playerSession", JSON.stringify(data))
+        sessionStorage.setItem(PLAYER_SESSION_KEY, JSON.stringify(data))
     }
     function handleLeave() {
         setPlayerSession(null)
-        sessionStorage.removeItem("playerSession")
+        sessionStorage.removeItem(PLAYER_SESSION_KEY)
     }
     
     if (playerSession !== null) {
