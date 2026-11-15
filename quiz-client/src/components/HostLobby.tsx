@@ -113,7 +113,7 @@ function HostLobby({pin}: HostLobbyProps) {
             <ul>
                 <li>Host (You)</li>
                 {players.map(nickname => (<li key={nickname}>{nickname}
-                    <button onClick={() => handleKickPlayer(nickname)}>Kick</button>
+                    <button className="kickButton" title="Kick player" onClick={() => handleKickPlayer(nickname)}>✕</button>
                 </li>))}
             </ul>
             <button onClick={handleStartGame}>Start game</button>

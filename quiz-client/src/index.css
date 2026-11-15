@@ -57,3 +57,11 @@ button:hover{
 ul{
   list-style-type: none;
 }
+.kickButton{
+  width: auto;
+  padding: 2px;
+  margin: 0 0 0 8px;
+  background: transparent;
+  color: red;
+  font-size: 12px;
+}
