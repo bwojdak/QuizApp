@@ -134,15 +134,21 @@ function PlayerLobby({pin, nickname, initialPlayers, onLeave}: PlayerLobbyProps)
         )
     }
     return (
-        <div className="card">
-            <h1 className="cardTitle">Joined the game {pin} as {nickname}</h1>
-            <h2>Players:</h2>
-            <ul>
-                <li>Host</li>
-                {players.map(player => (<li key={player}>{player} {player === nickname && '(You)'}</li>))}
-            </ul>
+        <>
+            <div className="card">
+                <p className="hint">Game PIN</p>
+                <h1 className="pin">{pin}</h1>
+                <p className="hint">Waiting for the host to start the game…</p>
+            </div>
+            <div className="card">
+                <h2 className="cardTitle">Players ({players.length})</h2>
+                <ul className="playerList">
+                    <li>Host</li>
+                    {players.map(player => (<li key={player}>{player} {player === nickname && '(You)'}</li>))}
+                </ul>
+            </div>
             <LobbyChat pin={pin}/>
-        </div>
+        </>
     )
 }
 

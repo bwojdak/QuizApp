@@ -116,19 +116,24 @@ function HostLobby({pin,onLeave}: HostLobbyProps) {
         )
     }
     return (
-        <div className="card">
-            <h1 className="pin">PIN: {pin}</h1>
-            <h2>Players:</h2>
-            <ul>
-                <li>Host (You)</li>
-                {players.map(nickname => (<li key={nickname}>{nickname}
-                    <button className="kickButton" title="Kick player" onClick={() => handleKickPlayer(nickname)}>✕</button>
-                </li>))}
-            </ul>
-            <button onClick={handleStartGame}>Start game</button>
-            {error && <p>{error}</p>}
+        <>
+            <div className="card">
+                <p className="hint">Join with this PIN</p>
+                <h1 className="pin">{pin}</h1>
+            </div>
+            <div className="card">
+                <h2 className="cardTitle">Players ({players.length})</h2>
+                <ul className="playerList">
+                    <li>Host (You)</li>
+                    {players.map(nickname => (<li key={nickname}>{nickname}
+                        <button className="kickButton" title="Kick player" onClick={() => handleKickPlayer(nickname)}>✕</button>
+                    </li>))}
+                </ul>
+                <button onClick={handleStartGame}>Start game</button>
+                {error && <p>{error}</p>}
+            </div>
             <LobbyChat pin={pin}></LobbyChat>
-        </div>
+        </>
     )
 }
 

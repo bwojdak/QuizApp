@@ -80,11 +80,6 @@ ul{
   color: red;
   font-size: 12px;
 }
-.chatCard{
-  background: #463669;
-  border-radius: 30px;
-  padding: 15px;
-}
 .chatMessages{
   max-height: 150px;
   overflow-y: auto;
@@ -160,16 +155,25 @@ ul{
 .chatForm input{
   margin: 0;
 }
-.chatTitle{
-  margin: 0;
-  color: #6D549C
-}
 .chatFormButton{
   margin: 0;
 }
 .pin{
   margin: 0;
   font-size: 75px;
+  letter-spacing: 6px;
+}
+.playerList{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  padding: 0;
+}
+.playerList li{
+  background: #463669;
+  padding: 6px 14px;
+  border-radius: 20px;
 }
 .answers{
   display: grid;

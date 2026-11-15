@@ -33,8 +33,8 @@ function LobbyChat({pin}: LobbyChatProps) {
         }
     }
     return (
-        <div className="chatCard">
-            <h2 className="chatTitle">Chat</h2>
+        <div className="card">
+            <h2 className="cardTitle">Chat</h2>
             <ul className="chatMessages">
                 {messages.map((m, i) => <li key={i}>{m.sender}: {m.text}</li>)}
             </ul>
