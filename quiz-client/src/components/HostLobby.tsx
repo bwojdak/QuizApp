@@ -3,6 +3,7 @@ import {connection} from "../signalr.ts";
 import LobbyChat from "./LobbyChat.tsx";
 import type {PlayerQuestion, PlayerScore} from "../types.ts";
 import Ranking from "./Ranking.tsx";
+import Timer from "./Timer.tsx";
 
 type HostLobbyProps = {
     pin: string;
@@ -16,6 +17,7 @@ function HostLobby({pin,onLeave}: HostLobbyProps) {
     const [countdown, setCountdown] = useState<number | null>(null);
     const [question, setQuestion] = useState<PlayerQuestion | null>(null);
     const [currentRanking, setCurrentRanking] = useState<PlayerScore[] | null>(null);
+    const [rankingSeconds, setRankingSeconds] = useState<number>(0);
     useEffect(() => {
         function handlePlayerJoined(nickname: string) {
             setPlayers(prevPlayers => [...prevPlayers, nickname]);
@@ -38,8 +40,9 @@ function HostLobby({pin,onLeave}: HostLobbyProps) {
             setCountdown(seconds);
         }
 
-        function handleCurrentRanking(ranking: PlayerScore[]) {
+        function handleCurrentRanking(ranking: PlayerScore[], seconds: number) {
             setCurrentRanking(ranking)
+            setRankingSeconds(seconds);
         }
 
         connection.on("CurrentRanking", handleCurrentRanking)
@@ -90,6 +93,7 @@ function HostLobby({pin,onLeave}: HostLobbyProps) {
     if (currentRanking !== null) {
         return (
             <div className="card">
+                <Timer seconds={rankingSeconds}></Timer>
                 <h1 className="cardTitle">Current ranking:</h1>
                 <Ranking playerScores={currentRanking}></Ranking>
             </div>
@@ -99,6 +103,7 @@ function HostLobby({pin,onLeave}: HostLobbyProps) {
         return (
             <div className="card">
                 <h1 className="cardTitle">{question.content}</h1>
+                <Timer key={question.id} seconds={question.timeLimitSeconds}></Timer>
                 <ul className="answers">
                     {question.answers.map(a => <li key={a.id} >
                         <label>{a.content}</label>
@@ -123,8 +128,8 @@ function HostLobby({pin,onLeave}: HostLobbyProps) {
             </div>
             <div className="card">
                 <h2 className="cardTitle">Players ({players.length})</h2>
+                {players.length===0&& <p className="hint">Waiting for players…</p>}
                 <ul className="playerList">
-                    <li>Host (You)</li>
                     {players.map(nickname => (<li key={nickname}>{nickname}
                         <button className="kickButton" title="Kick player" onClick={() => handleKickPlayer(nickname)}>✕</button>
                     </li>))}

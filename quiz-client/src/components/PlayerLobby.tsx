@@ -4,6 +4,7 @@ import LobbyChat from "./LobbyChat.tsx";
 import type {AnswerResult, PlayerQuestion, PlayerScore} from "../types.ts";
 import Ranking from "./Ranking.tsx";
 import {PLAYER_SESSION_KEY} from "../storageKeys.ts";
+import Timer from "./Timer.tsx";
 
 type PlayerLobbyProps = {
     pin: string; nickname: string; initialPlayers: string[];
@@ -19,6 +20,7 @@ function PlayerLobby({pin, nickname, initialPlayers, onLeave}: PlayerLobbyProps)
     const [isKicked, setIsKicked] = useState<boolean>(false);
     const [countdown, setCountdown] = useState<number | null>(null);
     const [currentRanking, setCurrentRanking] = useState<PlayerScore[] | null>(null);
+    const [rankingSeconds, setRankingSeconds] = useState<number>(0);
     useEffect(() => {
         function handlePlayerJoined(player: string) {
             setPlayers(prevPlayers => [...prevPlayers, player]);
@@ -46,8 +48,9 @@ function PlayerLobby({pin, nickname, initialPlayers, onLeave}: PlayerLobbyProps)
             setCountdown(seconds);
         }
 
-        function handleCurrentRanking(ranking: PlayerScore[]) {
+        function handleCurrentRanking(ranking: PlayerScore[], seconds: number) {
             setCurrentRanking(ranking)
+            setRankingSeconds(seconds);
         }
 
         connection.on("CurrentRanking", handleCurrentRanking)
@@ -103,6 +106,7 @@ function PlayerLobby({pin, nickname, initialPlayers, onLeave}: PlayerLobbyProps)
         return (
             <div className="card">
                 <h1 className="cardTitle">Current ranking:</h1>
+                <Timer seconds={rankingSeconds}></Timer>
                 <Ranking playerScores={currentRanking}></Ranking>
             </div>
         )
@@ -111,6 +115,7 @@ function PlayerLobby({pin, nickname, initialPlayers, onLeave}: PlayerLobbyProps)
         return (
             <div className="card">
                 <h1 className="cardTitle">{question.content}</h1>
+                <Timer key={question.id} seconds={question.timeLimitSeconds}></Timer>
                 <ul className="answers">
                     {question.answers.map(a => <li key={a.id}>
                         <button onClick={() => handleSubmitAnswer(a.id)}>{a.content}</button>
@@ -143,7 +148,6 @@ function PlayerLobby({pin, nickname, initialPlayers, onLeave}: PlayerLobbyProps)
             <div className="card">
                 <h2 className="cardTitle">Players ({players.length})</h2>
                 <ul className="playerList">
-                    <li>Host</li>
                     {players.map(player => (<li key={player}>{player} {player === nickname && '(You)'}</li>))}
                 </ul>
             </div>

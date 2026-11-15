@@ -9,6 +9,7 @@ namespace Quiz.Api.Game;
 
 public class GameRunner
 {
+    private const int RankingDisplaySeconds = 5;
     private readonly GameStore _gameStore;
     private readonly IHubContext<GameHub> _hubContext;
     private readonly IServiceScopeFactory _scopeFactory;
@@ -48,19 +49,19 @@ public class GameRunner
             await _hubContext.Clients.Group(pin).SendAsync("Countdown", i);
             await Task.Delay(TimeSpan.FromSeconds(1));
         }
-
+        
         for (int i = 0; i < questions.Count; i++)
         {
+            
             var question = questions[i];
             game.CurrentQuestionId = question.Id;
             game.QuestionStartedAt = DateTime.UtcNow;
             await _hubContext.Clients.Group(pin).SendAsync("QuestionStarted", question);
             await Task.Delay(TimeSpan.FromSeconds(question.TimeLimitSeconds));
             bool isLastQuestion = i == questions.Count - 1;
-            if (isLastQuestion)
-                break; 
-            await _hubContext.Clients.Group(pin).SendAsync("CurrentRanking", game.GetRanking());
-            await Task.Delay(TimeSpan.FromSeconds(5));
+            if (isLastQuestion) break; 
+            await _hubContext.Clients.Group(pin).SendAsync("CurrentRanking", game.GetRanking(),RankingDisplaySeconds);
+            await Task.Delay(TimeSpan.FromSeconds(RankingDisplaySeconds));
         }
         await _hubContext.Clients.Group(pin).SendAsync("GameEnded", game.GetRanking());
     }
