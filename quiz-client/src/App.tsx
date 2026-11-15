@@ -45,6 +45,7 @@ function App() {
         setPlayerSession(null)
         sessionStorage.removeItem("playerSession")
     }
+    
     if (playerSession !== null) {
         return <PlayerLobby pin={playerSession.pin} nickname={playerSession.nickname}
                             initialPlayers={playerSession.players} onLeave={handleLeave}/>;

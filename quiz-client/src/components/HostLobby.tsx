@@ -2,6 +2,7 @@
 import {connection} from "../signalr.ts";
 import LobbyChat from "./LobbyChat.tsx";
 import type {PlayerQuestion, PlayerScore} from "../types.ts";
+import Ranking from "./Ranking.tsx";
 
 type HostLobbyProps = {
     pin: string;
@@ -18,22 +19,28 @@ function HostLobby({pin}: HostLobbyProps) {
         function handlePlayerJoined(nickname: string) {
             setPlayers(prevPlayers => [...prevPlayers, nickname]);
         }
+
         function handlePlayerKicked(nickname: string) {
             setPlayers(prevPlayers => prevPlayers.filter(player => player !== nickname));
         }
+
         function handleGameEnded(ranking: PlayerScore[]) {
             setScoreList(ranking);
         }
+
         function handleQuestionStarted(q: PlayerQuestion) {
             setQuestion(q);
             setCurrentRanking(null);
         }
-        function handleCountdown(seconds: number){
+
+        function handleCountdown(seconds: number) {
             setCountdown(seconds);
         }
+
         function handleCurrentRanking(crntRanking: PlayerScore[]) {
             setCurrentRanking(crntRanking)
         }
+
         connection.on("CurrentRanking", handleCurrentRanking)
         connection.on("QuestionStarted", handleQuestionStarted)
         connection.on("Countdown", handleCountdown);
@@ -49,7 +56,7 @@ function HostLobby({pin}: HostLobbyProps) {
             connection.off("PlayerKicked", handlePlayerKicked);
         }
     }, []);
-    
+
     async function handleStartGame() {
         setError(null);
         try {
@@ -59,40 +66,25 @@ function HostLobby({pin}: HostLobbyProps) {
             setError("Unable to start game");
         }
     }
+
     async function handleKickPlayer(nickname: string) {
         setError(null);
         try {
-            await connection.invoke("KickPlayer", pin,nickname);
-        }catch(err) {
-                console.error(err);
-                setError("Failed to kick player");
+            await connection.invoke("KickPlayer", pin, nickname);
+        } catch (err) {
+            console.error(err);
+            setError("Failed to kick player");
         }
     }
 
     if (scoreList !== null) {
         return (
-            <div>
-                <ul>
-                    {scoreList.map((s, index) => (
-                        <li key={s.nickname}>
-                            {index + 1}. {s.nickname} – {s.points} points
-                        </li>
-                    ))}
-                </ul>
-            </div>
+            <Ranking playerScores={scoreList}></Ranking>
         )
     }
     if (currentRanking !== null) {
         return (
-            <div>
-                <ul>
-                    {currentRanking.map((s, index) => (
-                        <li key={s.nickname}>
-                            {index + 1}. {s.nickname} – {s.points} points
-                        </li>
-                    ))}
-                </ul>
-            </div>
+            <Ranking playerScores={currentRanking}></Ranking>
         )
     }
     if (question !== null) {
@@ -107,7 +99,7 @@ function HostLobby({pin}: HostLobbyProps) {
             </div>
         )
     }
-    if(countdown !== null) {
+    if (countdown !== null) {
         return (
             <div>
                 <h1>Game is starting in {countdown}..</h1>
@@ -120,7 +112,9 @@ function HostLobby({pin}: HostLobbyProps) {
             <h2>Players:</h2>
             <ul>
                 <li>Host (You)</li>
-                {players.map(nickname => (<li key={nickname}>{nickname} <button onClick={()=>handleKickPlayer(nickname)}>Kick</button></li>))}
+                {players.map(nickname => (<li key={nickname}>{nickname}
+                    <button onClick={() => handleKickPlayer(nickname)}>Kick</button>
+                </li>))}
             </ul>
             <button onClick={handleStartGame}>Start game</button>
             {error && <p>{error}</p>}

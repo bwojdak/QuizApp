@@ -2,13 +2,14 @@
 import {connection} from "../signalr.ts";
 import LobbyChat from "./LobbyChat.tsx";
 import type {AnswerResult, PlayerQuestion, PlayerScore} from "../types.ts";
+import Ranking from "./Ranking.tsx";
 
 type PlayerLobbyProps = {
     pin: string; nickname: string; initialPlayers: string[];
     onLeave: () => void;
 }
 
-function PlayerLobby({pin, nickname, initialPlayers,onLeave}: PlayerLobbyProps) {
+function PlayerLobby({pin, nickname, initialPlayers, onLeave}: PlayerLobbyProps) {
     const [players, setPlayers] = useState<string[]>(initialPlayers);
     const [question, setQuestion] = useState<PlayerQuestion | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -21,26 +22,32 @@ function PlayerLobby({pin, nickname, initialPlayers,onLeave}: PlayerLobbyProps) 
         function handlePlayerJoined(player: string) {
             setPlayers(prevPlayers => [...prevPlayers, player]);
         }
+
         function handlePlayerKicked(nicknameToKick: string) {
             setPlayers(prev => prev.filter(player => player !== nicknameToKick));
             if (nicknameToKick === nickname) {
                 setIsKicked(true);
             }
         }
+
         function handleQuestionStarted(q: PlayerQuestion) {
             setCurrentRanking(null);
             setQuestion(q);
             setAnswerResult(null);
         }
+
         function handleGameEnded(ranking: PlayerScore[]) {
             setScoreList(ranking)
         }
-        function handleCountdown(seconds: number){
+
+        function handleCountdown(seconds: number) {
             setCountdown(seconds);
         }
+
         function handleCurrentRanking(crntRanking: PlayerScore[]) {
             setCurrentRanking(crntRanking)
         }
+
         connection.on("CurrentRanking", handleCurrentRanking)
         connection.on("PlayerKicked", handlePlayerKicked);
         connection.on("GameEnded", handleGameEnded)
@@ -72,38 +79,23 @@ function PlayerLobby({pin, nickname, initialPlayers,onLeave}: PlayerLobbyProps) 
             }
         }
     }
+
     if (isKicked) {
-        return(
+        return (
             <div>
-            <h2>You have been kicked from the game</h2>
-            <button onClick={()=> onLeave()}>← Back</button>
-             </div>
+                <h2>You have been kicked from the game</h2>
+                <button onClick={() => onLeave()}>← Back</button>
+            </div>
         )
     }
     if (scoreList !== null) {
-        return (
-            <div>
-                <ul>
-                    {scoreList.map((s, index) => (
-                        <li key={s.nickname}>
-                            {index + 1}. {s.nickname} – {s.points} points
-                        </li>
-                    ))}
-                </ul>
-            </div>
+        return(
+        <Ranking playerScores={scoreList}></Ranking>
         )
     }
     if (currentRanking !== null) {
         return (
-            <div>
-                <ul>
-                    {currentRanking.map((s, index) => (
-                        <li key={s.nickname}>
-                            {index + 1}. {s.nickname} – {s.points} points
-                        </li>
-                    ))}
-                </ul>
-            </div>
+            <Ranking playerScores={currentRanking}></Ranking>
         )
     }
     if (question !== null) {
@@ -124,7 +116,7 @@ function PlayerLobby({pin, nickname, initialPlayers,onLeave}: PlayerLobbyProps) 
             </div>
         )
     }
-    if(countdown !== null) {
+    if (countdown !== null) {
         return (
             <div>
                 <h1>Game is starting in {countdown}..</h1>
