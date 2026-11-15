@@ -6,9 +6,10 @@ import Ranking from "./Ranking.tsx";
 
 type HostLobbyProps = {
     pin: string;
+    onLeave: () => void;
 }
 
-function HostLobby({pin}: HostLobbyProps) {
+function HostLobby({pin,onLeave}: HostLobbyProps) {
     const [players, setPlayers] = useState<string[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [scoreList, setScoreList] = useState<PlayerScore[] | null>(null);
@@ -79,18 +80,25 @@ function HostLobby({pin}: HostLobbyProps) {
 
     if (scoreList !== null) {
         return (
-            <Ranking playerScores={scoreList}></Ranking>
+            <div className="card">
+                <h1 className="cardTitle">🏆 Final ranking</h1>
+                <Ranking playerScores={scoreList}></Ranking>
+                <button onClick={() => onLeave()}>← Back to quiz list</button>
+            </div>
         )
     }
     if (currentRanking !== null) {
         return (
-            <Ranking playerScores={currentRanking}></Ranking>
+            <div className="card">
+                <h1 className="cardTitle">Current ranking:</h1>
+                <Ranking playerScores={currentRanking}></Ranking>
+            </div>
         )
     }
     if (question !== null) {
         return (
-            <div>
-                <h1>{question.content}</h1>
+            <div className="card">
+                <h1 className="cardTitle">{question.content}</h1>
                 <ul className="answers">
                     {question.answers.map(a => <li key={a.id} >
                         <label>{a.content}</label>
@@ -101,8 +109,9 @@ function HostLobby({pin}: HostLobbyProps) {
     }
     if (countdown !== null) {
         return (
-            <div>
-                <h1>Game is starting in {countdown}..</h1>
+            <div className="card">
+                <h2 className="cardTitle">Game starts in</h2>
+                <p className="countdown">{countdown}</p>
             </div>
         )
     }

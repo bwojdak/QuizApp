@@ -148,6 +148,11 @@ li:hover{
   border-radius: 10px;
   font-weight: bold;
 }
+.countdown{
+  font-size: 200px;
+  font-weight: bold;
+  margin:5px;
+}
 
 
 

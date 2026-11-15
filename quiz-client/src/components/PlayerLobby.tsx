@@ -92,7 +92,8 @@ function PlayerLobby({pin, nickname, initialPlayers, onLeave}: PlayerLobbyProps)
     }
     if (scoreList !== null) {
         return (
-            <div>
+            <div className="card">
+                <h1 className="cardTitle">🏆 Final ranking</h1>
                 <Ranking playerScores={scoreList}></Ranking>
                 <button onClick={() => onLeave()}>← Back to quiz list</button>
             </div>
@@ -100,7 +101,10 @@ function PlayerLobby({pin, nickname, initialPlayers, onLeave}: PlayerLobbyProps)
     }
     if (currentRanking !== null) {
         return (
-            <Ranking playerScores={currentRanking}></Ranking>
+            <div className="card">
+                <h1 className="cardTitle">Current ranking:</h1>
+                <Ranking playerScores={currentRanking}></Ranking>
+            </div>
         )
     }
     if (question !== null) {
@@ -123,8 +127,9 @@ function PlayerLobby({pin, nickname, initialPlayers, onLeave}: PlayerLobbyProps)
     }
     if (countdown !== null) {
         return (
-            <div>
-                <h1>Game is starting in {countdown}..</h1>
+            <div className="card">
+                <h2 className="cardTitle">Game starts in</h2>
+                <p className="countdown">{countdown}</p>
             </div>
         )
     }

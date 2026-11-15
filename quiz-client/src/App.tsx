@@ -46,13 +46,12 @@ function App() {
         setPlayerSession(null)
         sessionStorage.removeItem(PLAYER_SESSION_KEY)
     }
-    
     if (playerSession !== null) {
         return <PlayerLobby pin={playerSession.pin} nickname={playerSession.nickname}
                             initialPlayers={playerSession.players} onLeave={handleLeave}/>;
     }
     if (gamePin !== null) {
-        return <HostLobby pin={gamePin}/>
+        return <HostLobby pin={gamePin} onLeave={()=> setGamePin(null)}/>
     }
     if (selectedQuizId === null) {
         return <div>
