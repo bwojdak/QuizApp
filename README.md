@@ -19,6 +19,24 @@ Players join from their own devices and answer timed questions, and the ranking 
 - **Server-side validation**: the server checks the game state, the host's rights, duplicate nicknames, double answers
   and the time limit.
 
+## Screenshots
+
+| Main screen | Quiz editor |
+|---|---|
+| ![Main screen](docs/screenshots/main.png) | ![Quiz editor](docs/screenshots/quiz-editor.png) |
+
+| Host lobby (PIN, players, chat) | Question on the host screen |
+|---|---|
+| ![Host lobby](docs/screenshots/host-lobby.png) | ![Host question](docs/screenshots/host-question.png) |
+
+| Player answers | Ranking between questions |
+|---|---|
+| ![Player answer](docs/screenshots/player-answer.png) | ![Ranking](docs/screenshots/ranking.png) |
+
+| Final ranking |
+|---|
+| ![Final ranking](docs/screenshots/final-ranking.png) |
+
 ## Project structure
 
 ```
